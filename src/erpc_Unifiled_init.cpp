@@ -15,7 +15,10 @@
 #include "erpc_simple_server.h"
 #include "erpc_transport_arbitrator.h"
 #include "erpc_port.h"
-#include  "gap_scan.h"
+#include "gap_scan.h"
+#include "rpc_ble_api_hal.h"
+
+
 using namespace erpc;
 
 class MyMessageBufferFactory : public MessageBufferFactory
@@ -86,6 +89,10 @@ void rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
     //     Serial.printf("%0x, ", cb_data->data[i]);
     // }
     // Serial.printf("\n\r");
+
+    if(_gap_callback != NULL)
+        _gap_callback(cb_type, cb_data->data);
+    
 }
 
 void runServer(void *arg)
