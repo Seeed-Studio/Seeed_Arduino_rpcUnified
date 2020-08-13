@@ -18,5 +18,4 @@
 #include "erpc_transport_arbitrator.h"
 #include "erpc_port.h"
 
-
 #endif//_SEEED_ERPCUNIFIED_H__
