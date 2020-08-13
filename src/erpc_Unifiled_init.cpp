@@ -15,17 +15,8 @@
 #include "erpc_simple_server.h"
 #include "erpc_transport_arbitrator.h"
 #include "erpc_port.h"
-
+#include  "gap_scan.h"
 using namespace erpc;
-typedef struct
-{
-    uint8_t bd_addr[6];       /**< Bluetooth address of remote device. */
-    uint8_t remote_addr_type; /**< Address type of remote device. */
-    uint8_t adv_type;         /**< Advertising event type. */
-    int8_t rssi;              /**< RSSI. */
-    uint8_t data_len;
-    uint8_t data[31];
-} T_LE_SCAN_INFO;
 
 class MyMessageBufferFactory : public MessageBufferFactory
 {
