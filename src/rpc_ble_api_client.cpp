@@ -637,7 +637,7 @@ RPC_T_GAP_CAUSE rpc_le_gen_rand_addr(RPC_T_GAP_RAND_ADDR_TYPE rand_addr_type, bi
 
     // Encode the request.
     Codec * codec = request.getCodec();
-
+ 
     if (codec == NULL)
     {
         err = kErpcStatus_MemoryError;
