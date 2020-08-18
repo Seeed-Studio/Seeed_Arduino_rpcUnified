@@ -73,25 +73,16 @@ T_GAP_CAUSE le_get_gap_param(T_GAP_LE_PARAM_TYPE param, void *p_value)
 T_GAP_CAUSE le_modify_white_list(T_GAP_WHITE_LIST_OP operation, uint8_t *bd_addr,
                                  T_GAP_REMOTE_ADDR_TYPE bd_type)
 {
-    binary_t value;
-    value.dataLength = 6;
-    value.data = (uint8_t *)bd_addr;
-    return (T_GAP_CAUSE)rpc_modify_white_list((RPC_T_GAP_WHITE_LIST_OP)operation, &value, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type);
+    return (T_GAP_CAUSE)rpc_le_modify_white_list((RPC_T_GAP_WHITE_LIST_OP)operation, bd_addr, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type);
 }
 T_GAP_CAUSE le_gen_rand_addr(T_GAP_RAND_ADDR_TYPE rand_addr_type, uint8_t *random_bd)
 {
-    binary_t value;
-    value.dataLength = 6;
-    value.data = (uint8_t *)random_bd;
-    return (T_GAP_CAUSE)rpc_le_gen_rand_addr((RPC_T_GAP_RAND_ADDR_TYPE)rand_addr_type, &value);
+    return (T_GAP_CAUSE)rpc_le_gen_rand_addr((RPC_T_GAP_RAND_ADDR_TYPE)rand_addr_type, random_bd);
 }
 
 T_GAP_CAUSE le_set_rand_addr(uint8_t *random_bd)
 {
-    binary_t value;
-    value.dataLength = 6;
-    value.data = (uint8_t *)random_bd;
-    return (T_GAP_CAUSE)rpc_le_set_rand_addr(&value);
+    return (T_GAP_CAUSE)rpc_le_set_rand_addr(random_bd);
 }
 
 // T_GAP_CAUSE le_cfg_local_identity_address(uint8_t *addr, T_GAP_IDENT_ADDR_TYPE type)
