@@ -25,9 +25,9 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
+#include "bt_flags.h"
 #if F_BT_LE_GAP_SCAN_SUPPORT
-#include <gap_le.h>
+#include "gap_le.h"
 
 
 /** @defgroup Observer_Role GAP Observer Role

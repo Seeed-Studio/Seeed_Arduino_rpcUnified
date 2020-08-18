@@ -25,8 +25,8 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <bt_types.h>
+#include "bt_flags.h"
+#include "bt_types.h"
 #include <stdint.h>
 #include <stdbool.h>
 

@@ -25,9 +25,9 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap_storage_le.h>
-#include <gap_le_types.h>
+#include "bt_flags.h"
+#include "gap_storage_le.h"
+#include "gap_le_types.h"
 
 /** @defgroup GAP_CB_MSG_MODULE GAP Callback Message
   * @brief GAP Callback Message

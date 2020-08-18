@@ -25,10 +25,11 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
+#include "bt_flags.h"
+#include "bt_types.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include <bt_types.h>
+
 
 
 /** @addtogroup GAP_COMMON GAP Common

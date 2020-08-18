@@ -25,7 +25,7 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
+#include "bt_flags.h"
 
 /** @defgroup GAP_MSG_MODULE GAP Message
   * @brief GAP message

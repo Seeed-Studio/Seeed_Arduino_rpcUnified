@@ -25,10 +25,10 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap.h>
-#include <gap_le.h>
-#include <gap_msg.h>
+#include "bt_flags.h"
+#include "gap.h"
+#include "gap_le.h"
+#include "gap_msg.h"
 
 /** @defgroup GAP_LE_CONNECTION_MODULE GAP LE Connection Module
   * @brief GAP LE connection module

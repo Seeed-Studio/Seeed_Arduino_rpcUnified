@@ -26,11 +26,11 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
+#include "bt_flags.h"
 #if F_BT_LE_PRIVACY_SUPPORT
-#include <gap_le.h>
-#include <gap_conn_le.h>
-#include <gap_storage_le.h>
+#include "gap_le.h"
+#include "gap_conn_le.h"
+#include "gap_storage_le.h"
 
 
 /** @defgroup GAP_PRIVACY_MODULE GAP LE Privacy

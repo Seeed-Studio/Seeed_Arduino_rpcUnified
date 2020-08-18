@@ -25,9 +25,9 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
+#include "bt_flags.h"
 #if F_BT_LE_GAP_PERIPHERAL_SUPPORT
-#include <gap_le.h>
+#include "gap_le.h"
 
 
 /** @addtogroup GAP_BROADCASTER_Role GAP Broadcaster Role

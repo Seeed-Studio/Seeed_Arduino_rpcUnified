@@ -25,8 +25,8 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap_le_types.h>
+#include "bt_flags.h"
+#include "gap_le_types.h"
 
 /** @addtogroup GAP GAP
   * @{
@@ -242,10 +242,9 @@ void gap_config_max_le_link_num(uint8_t le_link_num);
   * @}
   */
 
-
-#endif
 #ifdef __cplusplus
 }
+#endif
 
 #endif /* GAP_CONFIG_H */
 

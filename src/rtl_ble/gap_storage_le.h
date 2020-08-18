@@ -25,9 +25,9 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap.h>
-#include <gap_le_types.h>
+#include "bt_flags.h"
+#include "gap.h"
+#include "gap_le_types.h"
 
 /** @defgroup GAP_LE_STORAGE GAP LE Storage
   * @brief GAP LE Storage

@@ -26,8 +26,8 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap_le.h>
+#include "bt_flags.h"
+#include "gap_le.h"
 
 
 /** @defgroup GAP_LE_Bond_Manager GAP LE Bond Manager

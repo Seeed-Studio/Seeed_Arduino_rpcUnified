@@ -25,9 +25,9 @@ extern "C"
 /*============================================================================*
  *                        Header Files
  *============================================================================*/
-#include <bt_flags.h>
-#include <gap.h>
-#include <gap_callback_le.h>
+#include "bt_flags.h"
+#include "gap.h"
+#include "gap_callback_le.h"
 
 
 /** @addtogroup GAP_LE_COMMON GAP LE Common Module

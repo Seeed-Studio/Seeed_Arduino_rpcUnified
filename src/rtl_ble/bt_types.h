@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include <bt_flags.h>
+#include "bt_flags.h"
 /**
  * \defgroup    BTTYPES     BT Types
  *
