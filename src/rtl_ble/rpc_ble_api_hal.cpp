@@ -256,3 +256,31 @@ T_GAP_CAUSE le_adv_update_param(void)
     RPC_FUN_GAP_VOID(le_adv_stop);
 }
 //@}
+
+//! @name rpc_gap_scan
+//@{
+T_GAP_CAUSE le_scan_set_param(T_LE_SCAN_PARAM_TYPE param, uint8_t len, void *p_value)
+{
+    RPC_FUN_GAP_SET_PARAM(le_scan_set_param, T_LE_SCAN_PARAM_TYPE);
+}
+
+T_GAP_CAUSE le_scan_get_param(T_LE_SCAN_PARAM_TYPE param, void *p_value)
+{
+    RPC_FUN_GAP_GET_PARAM(le_scan_get_param, T_LE_SCAN_PARAM_TYPE);
+}
+
+T_GAP_CAUSE le_scan_start(void)
+{
+    RPC_FUN_GAP_VOID(le_scan_start);
+}
+
+T_GAP_CAUSE le_scan_stop(void)
+{
+    RPC_FUN_GAP_VOID(le_scan_stop);
+}
+
+bool le_scan_info_filter(bool enable, uint8_t offset, uint8_t len, uint8_t *p_filter)
+{
+    return rpc_le_scan_info_filter(enable, offset, len, p_filter);
+}
+//@}
