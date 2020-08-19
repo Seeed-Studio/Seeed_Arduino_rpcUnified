@@ -284,3 +284,111 @@ bool le_scan_info_filter(bool enable, uint8_t offset, uint8_t len, uint8_t *p_fi
     return rpc_le_scan_info_filter(enable, offset, len, p_filter);
 }
 //@}
+
+//! @name rpc_gap_conn
+//@{
+
+T_GAP_CAUSE le_get_conn_param(T_LE_CONN_PARAM_TYPE param, void *p_value, uint8_t conn_id)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    binary_t value;
+    ret = (T_GAP_CAUSE)rpc_le_get_conn_param((RPC_T_LE_CONN_PARAM_TYPE)param, &value, conn_id);
+    if (GAP_SUCCESS == ret)
+        memcpy(p_value, value.data, value.dataLength);
+    erpc_free(value.data);
+    return ret;
+}
+
+bool le_get_conn_info(uint8_t conn_id, T_GAP_CONN_INFO *p_conn_info)
+{
+    return rpc_le_get_conn_info(conn_id, (RPC_T_GAP_CONN_INFO *)p_conn_info);
+}
+
+bool le_get_conn_addr(uint8_t conn_id, uint8_t *bd_addr, uint8_t *bd_type)
+{
+    return rpc_le_get_conn_addr(conn_id, bd_addr, bd_type);
+}
+
+bool le_get_conn_id(uint8_t *bd_addr, uint8_t bd_type, uint8_t *p_conn_id)
+{
+    return rpc_le_get_conn_id(bd_addr, bd_type, p_conn_id);
+}
+
+uint8_t le_get_active_link_num(void)
+{
+    return rpc_le_get_active_link_num();
+}
+
+uint8_t le_get_idle_link_num(void)
+{
+    return rpc_le_get_idle_link_num();
+}
+
+T_GAP_CAUSE le_disconnect(uint8_t conn_id)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_disconnect(conn_id);
+    return ret;
+}
+
+T_GAP_CAUSE le_read_rssi(uint8_t conn_id)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_read_rssi(conn_id);
+    return ret;
+}
+
+T_GAP_CAUSE le_set_data_len(uint8_t conn_id, uint16_t tx_octets, uint16_t tx_time)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_set_data_len(conn_id, tx_octets, tx_time);
+    return ret;
+}
+
+T_GAP_CAUSE le_set_phy(uint8_t conn_id, uint8_t all_phys, uint8_t tx_phys, uint8_t rx_phys,
+                       T_GAP_PHYS_OPTIONS phy_options)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_set_phy(conn_id, all_phys, tx_phys, rx_phys, (RPC_T_GAP_PHYS_OPTIONS)phy_options);
+    return ret;
+}
+
+T_GAP_CAUSE le_set_conn_param(T_GAP_CONN_PARAM_TYPE type,
+                              T_GAP_LE_CONN_REQ_PARAM *p_conn_param)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_set_conn_param((RPC_T_GAP_CONN_PARAM_TYPE)type,
+                                             (RPC_T_GAP_LE_CONN_REQ_PARAM *)p_conn_param);
+    return ret;
+}
+
+T_GAP_CAUSE le_connect(uint8_t init_phys, uint8_t *remote_bd,
+                       T_GAP_REMOTE_ADDR_TYPE remote_bd_type,
+                       T_GAP_LOCAL_ADDR_TYPE local_bd_type, uint16_t scan_timeout)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_connect(init_phys, remote_bd,
+                                      (RPC_T_GAP_REMOTE_ADDR_TYPE)remote_bd_type,
+                                      (RPC_T_GAP_LOCAL_ADDR_TYPE)local_bd_type, scan_timeout);
+    return ret;
+}
+
+T_GAP_CAUSE le_update_conn_param(uint8_t conn_id,
+                                 uint16_t conn_interval_min,
+                                 uint16_t conn_interval_max,
+                                 uint16_t conn_latency,
+                                 uint16_t supervision_timeout,
+                                 uint16_t ce_length_min,
+                                 uint16_t ce_length_max)
+{
+    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
+    ret = (T_GAP_CAUSE)rpc_le_update_conn_param(conn_id,
+                                                conn_interval_min,
+                                                conn_interval_max,
+                                                conn_latency,
+                                                supervision_timeout,
+                                                ce_length_min,
+                                                ce_length_max);
+    return ret;
+}
+//@}
