@@ -8,7 +8,7 @@ extern P_FUN_LE_APP_CB _ble_gap_callback;
 
 void le_register_app_cb(P_FUN_LE_APP_CB ble_gap_callback)
 {
-    _ble_gap_callback = _ble_gap_callback;
+    _ble_gap_callback = ble_gap_callback;
 }
 
 T_GAP_CAUSE le_adv_set_param(T_LE_ADV_PARAM_TYPE param, uint8_t len, void *p_value)

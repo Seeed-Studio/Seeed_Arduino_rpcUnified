@@ -38,8 +38,9 @@ void rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
     //     Serial.printf("%0x, ", cb_data->data[i]);
     // }
     // Serial.printf("\n\r");
-
+    T_LE_CB_DATA *p_cb_data = (T_LE_CB_DATA *)malloc(sizeof(T_LE_CB_DATA));
+    p_cb_data->p_le_scan_info = (T_LE_SCAN_INFO *)cb_data->data;
     if(_ble_gap_callback != NULL)
-        _ble_gap_callback(cb_type, cb_data->data);
-    
+        _ble_gap_callback(cb_type, p_cb_data);
+    free(p_cb_data);
 }
