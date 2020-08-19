@@ -40,7 +40,7 @@ public:
 Uart Serial1(&SERCOM_GPIO_SERIAL_X, PIN_GPIO_SERIAL_X_RX, PIN_GPIO_SERIAL_X_TX, PAD_GPIO_SERIAL_X_RX, PAD_GPIO_SERIAL_X_TX);
 INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_X(Serial1)
 
-UartTransport g_transport(&Serial1, 1843200);
+UartTransport g_transport(&Serial1, 115200);
 MyMessageBufferFactory g_msgFactory;
 BasicCodecFactory g_basicCodecFactory;
 ArbitratedClientManager *g_client;

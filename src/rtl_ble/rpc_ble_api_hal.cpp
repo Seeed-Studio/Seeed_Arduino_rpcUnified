@@ -3,11 +3,12 @@
 #include "rpc_ble_api.h"
 #include "gap_adv.h"
 
-P_FUN_LE_APP_CB _gap_callback = NULL;
+extern P_FUN_LE_APP_CB _ble_gap_callback;
 
-void le_register_app_cb(P_FUN_LE_APP_CB gap_callback)
+
+void le_register_app_cb(P_FUN_LE_APP_CB ble_gap_callback)
 {
-    _gap_callback = gap_callback;
+    _ble_gap_callback = _ble_gap_callback;
 }
 
 T_GAP_CAUSE le_adv_set_param(T_LE_ADV_PARAM_TYPE param, uint8_t len, void *p_value)
@@ -85,22 +86,7 @@ T_GAP_CAUSE le_set_rand_addr(uint8_t *random_bd)
     return (T_GAP_CAUSE)rpc_le_set_rand_addr(random_bd);
 }
 
-// T_GAP_CAUSE le_cfg_local_identity_address(uint8_t *addr, T_GAP_IDENT_ADDR_TYPE type)
-// {
-//     return;
-// }
 
-// T_GAP_CAUSE le_set_host_chann_classif(uint8_t *p_channel_map)
-// {
-//     binary_t value;
-//     value.dataLength = 1;
-//     value.data = (uint8_t *)p_channel_map;
-//     return (T_GAP_CAUSE)rpc_le_set_host_chann_classif(&value);
-// }
-
-// T_GAP_CAUSE le_write_default_data_len(uint16_t tx_octets, uint16_t tx_time)
-// {
-// }
 
 T_GAP_CAUSE le_scan_set_param(T_LE_SCAN_PARAM_TYPE param, uint8_t len, void *p_value)
 {

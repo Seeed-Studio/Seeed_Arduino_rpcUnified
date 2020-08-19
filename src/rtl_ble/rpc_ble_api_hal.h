@@ -13,6 +13,4 @@
 #include "gap_scan.h"
 #include "gap_storage_le.h"
 
-extern P_FUN_LE_APP_CB _gap_callback;
-
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);
