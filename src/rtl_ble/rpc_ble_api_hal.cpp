@@ -228,3 +228,31 @@ void gap_config_max_le_link_num(uint8_t le_link_num)
     return rpc_gap_config_max_le_link_num(le_link_num);
 }
 //@}
+
+//! @name rpc_gap_adv
+//@{
+T_GAP_CAUSE le_adv_set_param(T_LE_ADV_PARAM_TYPE param, uint8_t len, void *p_value)
+{
+    RPC_FUN_GAP_SET_PARAM(le_adv_set_param, T_LE_ADV_PARAM_TYPE);
+}
+
+T_GAP_CAUSE le_adv_get_param(T_LE_ADV_PARAM_TYPE param, void *p_value)
+{
+    RPC_FUN_GAP_GET_PARAM(le_adv_get_param, T_LE_ADV_PARAM_TYPE);
+}
+
+T_GAP_CAUSE le_adv_start(void)
+{
+    RPC_FUN_GAP_VOID(le_adv_start);
+}
+
+T_GAP_CAUSE le_adv_stop(void)
+{
+    RPC_FUN_GAP_VOID(le_adv_stop);
+}
+
+T_GAP_CAUSE le_adv_update_param(void)
+{
+    RPC_FUN_GAP_VOID(le_adv_stop);
+}
+//@}
