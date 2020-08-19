@@ -179,3 +179,52 @@ T_GAP_CAUSE le_write_default_data_len(uint16_t tx_octets, uint16_t tx_time)
     return ret;
 }
 //@}
+
+//! @name rpc_gap_config
+//@{
+void gap_config_cccd_not_check(T_GAP_CONFIG_GATT_CCCD_NOT_CHECK cccd_not_check_flag)
+{
+    return rpc_gap_config_cccd_not_check((RPC_T_GAP_CONFIG_GATT_CCCD_NOT_CHECK)cccd_not_check_flag);
+}
+
+void gap_config_ccc_bits_count(uint8_t gatt_server_ccc_bits_count,
+                               uint8_t gatt_storage_ccc_bits_count)
+{
+    return rpc_gap_config_ccc_bits_count(gatt_server_ccc_bits_count, gatt_storage_ccc_bits_count);
+}
+
+void gap_config_max_attribute_table_count(uint8_t gatt_max_attribute_table_count)
+{
+    return rpc_gap_config_max_attribute_table_count(gatt_max_attribute_table_count);
+}
+
+void gap_config_max_mtu_size(uint16_t att_max_mtu_size)
+{
+    return rpc_gap_config_max_mtu_size(att_max_mtu_size);
+}
+
+void gap_config_bte_pool_size(uint8_t bte_pool_size)
+{
+    return rpc_gap_config_bte_pool_size(bte_pool_size);
+}
+
+void gap_config_bt_report_buf_num(uint8_t bt_report_buf_num)
+{
+    return rpc_gap_config_bt_report_buf_num(bt_report_buf_num);
+}
+
+void gap_config_le_key_storage_flag(uint16_t le_key_storage_flag)
+{
+    return rpc_gap_config_le_key_storage_flag(le_key_storage_flag);
+}
+
+void gap_config_max_le_paired_device(uint8_t max_le_paired_device)
+{
+    return rpc_gap_config_max_le_paired_device(max_le_paired_device);
+}
+
+void gap_config_max_le_link_num(uint8_t le_link_num)
+{
+    return rpc_gap_config_max_le_link_num(le_link_num);
+}
+//@}
