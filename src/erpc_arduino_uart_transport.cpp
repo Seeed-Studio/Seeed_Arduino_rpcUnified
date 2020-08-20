@@ -36,7 +36,7 @@ erpc_status_t UartTransport::init(void)
 
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
-    size_t bytesRead = 0;
+    uint32_t bytesRead = 0;
     uint8_t *temp = data;
     while (bytesRead < size)
     {
@@ -52,11 +52,11 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
         }
         delay(10);
     }
-    // Serial.printf("underlyingReceive: size %d\n\rdata:\n\r");
+    // Serial.printf("underlyingReceive: size %d\n\rdata:\n\r", size);
     // for(int i = 0; i < bytesRead; i++)
     // {
     //     Serial.printf("0x%02x ", temp[i]);
-    //     if(i % 10 == 0 && i != 0)
+    //     if(i % 9 == 0 && i != 0)
     //     {
     //         Serial.printf("\n\r");
     //     }
@@ -67,13 +67,13 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 
 erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
 {
-    size_t bytesRead = size;
+    uint32_t bytesRead = size;
     const uint8_t *temp = data;
     // Serial.printf("underlyingSend: size %d\n\rdata:\n\r");
     // for(int i = 0; i < bytesRead; i++)
     // {
     //     Serial.printf("0x%02x ", temp[i]);
-    //     if(i % 10 == 0 && i != 0)
+    //     if(i % 9 == 0 && i != 0)
     //     {
     //         Serial.printf("\n\r");
     //     }

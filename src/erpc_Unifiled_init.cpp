@@ -5,8 +5,6 @@
 */
 
 
-#include "Arduino.h"
-#include "./rtl_ble/rtl_ble_unified.h"
 #include "erpc_arduino_uart_transport.h"
 #include "erpc_basic_codec.h"
 #include "erpc_arbitrated_client_manager.h"
@@ -14,6 +12,7 @@
 #include "erpc_simple_server.h"
 #include "erpc_transport_arbitrator.h"
 #include "erpc_port.h"
+#include "rtl_ble/rtl_ble_unified.h"
 
 
 
@@ -37,33 +36,10 @@ public:
     }
 };
 
-#define PIN_GPIO_SERIAL_BLE_RX	(PIN_SPI1_MISO)
-#define PIN_GPIO_SERIAL_BLE_TX	(PIN_SPI1_MOSI)
-#define PAD_GPIO_SERIAL_BLE_RX	(SERCOM_RX_PAD_2)
-#define PAD_GPIO_SERIAL_BLE_TX	(UART_TX_PAD_0)
-#define SERCOM_GPIO_SERIAL_BLE	sercom0
-#define INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_BLE(SERCOM_ID, uart) \
-	void SERCOM_ID##_0_Handler() \
-	{ \
-		(uart).IrqHandler(); \
-	} \
-	void SERCOM_ID##_1_Handler() \
-	{ \
-		(uart).IrqHandler(); \
-	} \
-	void SERCOM_ID##_2_Handler() \
-	{ \
-		(uart).IrqHandler(); \
-	} \
-	void SERCOM_ID##_3_Handler() \
-	{ \
-		(uart).IrqHandler(); \
-	}
+Uart Serial1(&SERCOM_GPIO_SERIAL_X, PIN_GPIO_SERIAL_X_RX, PIN_GPIO_SERIAL_X_TX, PAD_GPIO_SERIAL_X_RX, PAD_GPIO_SERIAL_X_TX);
+INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_X(Serial1)
 
-Uart BLE_SERIAL(&SERCOM_GPIO_SERIAL_BLE, PIN_GPIO_SERIAL_BLE_RX, PIN_GPIO_SERIAL_BLE_TX, PAD_GPIO_SERIAL_BLE_RX, PAD_GPIO_SERIAL_BLE_TX);
-INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_BLE(SERCOM0, BLE_SERIAL)
-
-UartTransport g_transport(&BLE_SERIAL, 115200);
+UartTransport g_transport(&Serial1, 115200);
 MyMessageBufferFactory g_msgFactory;
 BasicCodecFactory g_basicCodecFactory;
 ArbitratedClientManager *g_client;
@@ -99,8 +75,8 @@ void runServer(void *arg)
     }
 }
 
-Thread serverThread(&runServer, configMAX_PRIORITIES - 2, 1024, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 1, 2048, "runClient");
+Thread serverThread(&runServer, configMAX_PRIORITIES - 1, 2048, "runServer");
+Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 2048, "runClient");
 
 void erpc_init()
 {

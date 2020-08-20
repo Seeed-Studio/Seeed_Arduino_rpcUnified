@@ -33,7 +33,7 @@ void setup()
   while (!Serial)
   {
   };
-
+  delay(2000);
   Serial.printf("rpc_ble_init\n\r");
   rpc_ble_init();
   Serial.printf("rpc_gap_config_max_le_link_num\n\r");
@@ -42,11 +42,15 @@ void setup()
   rpc_le_gap_init(3);
   Serial.printf("rpc_ble_start\n\r");
   le_register_app_cb(ble_gap_callback);
+  uint16_t _scanInterval = 0x4000;              // Duration to wait between starting a scan. Value range: 0x0004 - 0x4000 (2.5ms - 10240ms)(0.625ms/step).
+  le_scan_set_param(GAP_PARAM_SCAN_INTERVAL, sizeof(_scanInterval), &_scanInterval);
   rpc_ble_start();
 
-  rpc_le_scan_start();
   delay(10000);
-  rpc_le_scan_stop();
+  Serial.printf("rpc_le_scan_start\n\r");
+  le_scan_start();
+  // delay(10000);
+  // rpc_le_scan_stop();
 }
 
 void loop()
