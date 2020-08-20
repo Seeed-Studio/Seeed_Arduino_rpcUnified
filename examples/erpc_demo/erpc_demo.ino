@@ -25,7 +25,7 @@ T_APP_RESULT ble_gap_callback(uint8_t cb_type, void *p_cb_data)
   }
   return result;
 }
-
+extern void ble_handle_gap_msg(T_IO_MSG *p_gap_msg);
 void setup()
 {
   // put your setup code here, to run once:
@@ -42,11 +42,12 @@ void setup()
   rpc_le_gap_init(3);
   Serial.printf("rpc_ble_start\n\r");
   le_register_app_cb(ble_gap_callback);
-  uint16_t _scanInterval = 0x4000;              // Duration to wait between starting a scan. Value range: 0x0004 - 0x4000 (2.5ms - 10240ms)(0.625ms/step).
+  le_register_msg_handler(ble_handle_gap_msg);
+  uint16_t _scanInterval = 0x400;              // Duration to wait between starting a scan. Value range: 0x0004 - 0x4000 (2.5ms - 10240ms)(0.625ms/step).
   le_scan_set_param(GAP_PARAM_SCAN_INTERVAL, sizeof(_scanInterval), &_scanInterval);
   rpc_ble_start();
 
-  delay(10000);
+  delay(1000);
   Serial.printf("rpc_le_scan_start\n\r");
   le_scan_start();
   // delay(10000);

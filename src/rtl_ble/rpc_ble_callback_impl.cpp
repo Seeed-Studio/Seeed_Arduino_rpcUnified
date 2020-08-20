@@ -1,26 +1,23 @@
 #include "Arduino.h"
 #include "rtl_ble_unified.h"
 
-//typedef void(*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 P_FUN_LE_APP_CB _ble_gap_callback = NULL;
-// P_FUN_HABDLE_GAP_MSG _handle_gap_msg = NULL;
+P_FUN_HABDLE_GAP_MSG _handle_gap_msg = NULL;
 
-//void ble_handle_gap_msg(T_IO_MSG *p_gap_msg)
-extern void ble_handle_gap_msg(T_IO_MSG *gap_msg);
 void rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 {
-    Serial.printf("rpc_ble_handle_gap_msg\n\r");
-    for (int i = 0; i < gap_msg->dataLength; i++)
-    {
-        Serial.printf("%02x, ", gap_msg->data[i]);
-    }
-    Serial.printf("\n\r");
-
-    ble_handle_gap_msg((T_IO_MSG *)gap_msg->data);
-    // if(_handle_gap_msg)
+    // Serial.printf("rpc_ble_handle_gap_msg\n\r");
+    // for (int i = 0; i < gap_msg->dataLength; i++)
     // {
-    //     _handle_gap_msg(gap_msg->data);
+    //     Serial.printf("%02x, ", gap_msg->data[i]);
     // }
+    // Serial.printf("\n\r");
+
+    // ble_handle_gap_msg((T_IO_MSG *)gap_msg->data);
+    if(_handle_gap_msg)
+    {
+        _handle_gap_msg((T_IO_MSG *)gap_msg->data);
+    }
 }
 
 RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)

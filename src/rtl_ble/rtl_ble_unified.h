@@ -1,3 +1,5 @@
+#ifndef RTL_BLE_UNIFIED_H
+#define RTL_BLE_UNIFIED_H
 #include "gap.h"
 #include "gap_adv.h"
 #include "gap_bond_le.h"
@@ -16,6 +18,9 @@
 #include "rpc_ble_api_hal.h"
 #include "rpc_ble_callback_server.h"
 #include "app_msg.h"
+
+
+#endif /* RTL_BLE_UNIFIED_H */
 
 
 

@@ -132,6 +132,11 @@ void le_register_app_cb(P_FUN_LE_APP_CB ble_gap_callback)
 {
     _ble_gap_callback = ble_gap_callback;
 }
+extern P_FUN_HABDLE_GAP_MSG _handle_gap_msg;
+void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg)
+{
+    _handle_gap_msg = handle_gap_msg;
+}
 
 T_GAP_CAUSE le_set_gap_param(T_GAP_LE_PARAM_TYPE param, uint8_t len, void *p_value)
 {

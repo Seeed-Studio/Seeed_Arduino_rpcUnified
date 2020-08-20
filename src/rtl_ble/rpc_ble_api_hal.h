@@ -14,6 +14,7 @@
 #include "gap_privacy.h"
 #include "gap_scan.h"
 #include "gap_storage_le.h"
+#include "app_msg.h"
 #include "Arduino.h"
 
 #define RPC_FUN_GAP_SET_PARAM(FUN, PARAM_TYPE)                     \
@@ -38,9 +39,12 @@
 #define RPC_FUN_GAP_VOID(FUN)             \
     Serial.printf("%s called\n\r", #FUN); \
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;  \
-    ret = (T_GAP_CAUSE)rpc_##FUN();             \
+    ret = (T_GAP_CAUSE)rpc_##FUN();       \
     return ret
 
+typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
+
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);
+void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg);
 
 #endif /* _rpc_ble_api__hal_h_ */
