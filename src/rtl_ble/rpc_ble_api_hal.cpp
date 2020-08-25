@@ -3,6 +3,7 @@
 #include "rpc_ble_api_hal.h"
 #include "rpc_ble_api.h"
 #include "gap_adv.h"
+#include "profile_client.h"
 #include "erpc_port.h"
 
 //! @brief Function to free space allocated inside struct binary_t
@@ -395,5 +396,81 @@ T_GAP_CAUSE le_update_conn_param(uint8_t conn_id,
                                                 ce_length_min,
                                                 ce_length_max);
     return ret;
+}
+//@}
+
+//! @name rpc_gatt_client
+//@{
+
+// void client_init(uint8_t client_num)
+// {
+//     rpc_ble_client_init(client_num);
+// }
+T_GAP_CAUSE client_all_primary_srv_discovery(uint8_t conn_id, T_CLIENT_ID client_id)
+{
+    RPC_FUN_RETURN_CAUSE_2(client_all_primary_srv_discovery, conn_id, client_id);
+}
+
+T_GAP_CAUSE client_by_uuid_srv_discovery(uint8_t conn_id, T_CLIENT_ID client_id, uint16_t uuid16)
+{
+    RPC_FUN_RETURN_CAUSE_3(client_by_uuid_srv_discovery, conn_id, client_id, uuid16);
+}
+
+T_GAP_CAUSE client_by_uuid128_srv_discovery(uint8_t conn_id, T_CLIENT_ID client_id,
+                                            uint8_t *p_uuid128)
+{
+    RPC_FUN_RETURN_CAUSE_3(client_by_uuid128_srv_discovery, conn_id, client_id, p_uuid128);
+}
+T_GAP_CAUSE client_relationship_discovery(uint8_t conn_id, T_CLIENT_ID client_id,
+                                          uint16_t start_handle, uint16_t end_handle)
+{
+    RPC_FUN_RETURN_CAUSE_4(client_relationship_discovery, conn_id, client_id, start_handle, end_handle);
+}
+T_GAP_CAUSE client_all_char_discovery(uint8_t conn_id, T_CLIENT_ID client_id, uint16_t start_handle,
+                                      uint16_t end_handle)
+{
+    RPC_FUN_RETURN_CAUSE_4(client_all_char_discovery, conn_id, client_id, start_handle, end_handle);
+}
+T_GAP_CAUSE client_by_uuid_char_discovery(uint8_t conn_id, T_CLIENT_ID client_id,
+                                          uint16_t start_handle,
+                                          uint16_t end_handle, uint16_t uuid16)
+{
+    RPC_FUN_RETURN_CAUSE_5(client_by_uuid_char_discovery, conn_id, client_id, start_handle, end_handle, uuid16);
+}
+T_GAP_CAUSE client_by_uuid128_char_discovery(uint8_t conn_id, T_CLIENT_ID client_id,
+                                             uint16_t start_handle,
+                                             uint16_t end_handle, uint8_t *p_uuid128)
+{
+    RPC_FUN_RETURN_CAUSE_5(client_by_uuid128_char_discovery, conn_id, client_id, start_handle, end_handle, p_uuid128);
+}
+T_GAP_CAUSE client_all_char_descriptor_discovery(uint8_t conn_id, T_CLIENT_ID client_id,
+                                                 uint16_t start_handle, uint16_t end_handle)
+{
+    RPC_FUN_RETURN_CAUSE_4(client_all_char_descriptor_discovery, conn_id, client_id, start_handle, end_handle);
+}
+
+T_GAP_CAUSE client_attr_read(uint8_t conn_id, T_CLIENT_ID client_id, uint16_t handle)
+{
+    RPC_FUN_RETURN_CAUSE_3(client_attr_read, conn_id, client_id, handle);
+}
+
+T_GAP_CAUSE client_attr_read_using_uuid(uint8_t conn_id, T_CLIENT_ID client_id,
+                                        uint16_t start_handle,
+                                        uint16_t end_handle, uint16_t uuid16, uint8_t *p_uuid128)
+{
+    RPC_FUN_RETURN_CAUSE_6(client_attr_read_using_uuid, conn_id, client_id, start_handle, end_handle, uuid16, p_uuid128);
+}
+T_GAP_CAUSE client_attr_write(uint8_t conn_id, T_CLIENT_ID client_id,
+                              T_GATT_WRITE_TYPE write_type,
+                              uint16_t handle, uint16_t length, uint8_t *p_data)
+{
+    binary_t data;
+    data.dataLength = length;
+    data.data = p_data;
+    RPC_FUN_RETURN_CAUSE_5(client_attr_write, conn_id, client_id, (RPC_T_GATT_WRITE_TYPE)write_type, handle, &data);
+}
+T_GAP_CAUSE client_attr_ind_confirm(uint8_t conn_id)
+{
+    RPC_FUN_RETURN_CAUSE_1(client_attr_ind_confirm, conn_id);
 }
 //@}

@@ -42,6 +42,28 @@
     ret = (T_GAP_CAUSE)rpc_##FUN();       \
     return ret
 
+#define RPC_FUN_RETURN_CAUSE_0(FUN) \
+    return (T_GAP_CAUSE)rpc_##FUN()
+
+#define RPC_FUN_RETURN_CAUSE_1(FUN, PARAM0) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0)
+
+#define RPC_FUN_RETURN_CAUSE_2(FUN, PARAM0, PARAM1) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1)
+
+#define RPC_FUN_RETURN_CAUSE_3(FUN, PARAM0, PARAM1, PARAM2) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2)
+
+#define RPC_FUN_RETURN_CAUSE_4(FUN, PARAM0, PARAM1, PARAM2, PARAM3) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3)
+
+#define RPC_FUN_RETURN_CAUSE_5(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4)
+
+#define RPC_FUN_RETURN_CAUSE_6(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5) \
+    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5)
+
+
 typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);

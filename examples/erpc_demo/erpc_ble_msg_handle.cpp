@@ -1,38 +1,10 @@
 #include "Arduino.h"
 #include "Seeed_erpcUnified.h"
 
-/*============================================================================*
- *                              Constants
- *============================================================================*/
-/** @brief  Config client LE link number */
-#define BLE_CLIENT_MAX_LINKS 3
-
-/** @brief  Config the discovery table number of gcs_client */
-#define BLE_CLIENT_MAX_DISCOV_TABLE_NUM 40
-
-/** @brief  Config set physical: 0-Not built in, 1-built in*/
-#define F_BT_LE_5_0_SET_PHY_SUPPORT 1
-
-/** @brief  Config server LE link number */
-#define BLE_SERVER_MAX_LINKS 1
-
-#define BLE_DEVICE_ROLE_SERVER 1
-#define BLE_DEVICE_ROLE_CLIENT 2
-
-/**
- * @brief  Application Link control block defination.
- */
-typedef struct
-{
-    T_GAP_CONN_STATE conn_state;      /**< Connection state. */
-    T_GAP_REMOTE_ADDR_TYPE bd_type;   /**< remote BD type*/
-    uint8_t bd_addr[GAP_BD_ADDR_LEN]; /**< remote BD */
-} T_APP_LINK;
-
 T_GAP_DEV_STATE ble_gap_dev_state = {0, 0, 0, 0, 0}; /**< GAP device state */
 T_GAP_CONN_STATE ble_gap_conn_state = GAP_CONN_STATE_DISCONNECTED;
 T_APP_LINK ble_clinet_link_table[BLE_CLIENT_MAX_LINKS];
-uint8_t ble_dev_role = BLE_DEVICE_ROLE_CLIENT; // 0:close 1:server 2:client
+RPC_T_GAP_ROLE ble_dev_role = RPC_GAP_LINK_ROLE_MASTER; // 0:close 1:server 2:client
 
 /**
  * @brief    Handle msg GAP_MSG_LE_DEV_STATE_CHANGE
@@ -59,7 +31,7 @@ void ble_dev_state_evt_handler(T_GAP_DEV_STATE new_state, uint16_t cause)
 
     // Assign different tasks according to different roles
     // As a Client
-    if (ble_dev_role == BLE_DEVICE_ROLE_CLIENT)
+    if (ble_dev_role == RPC_GAP_LINK_ROLE_MASTER)
     {
         if (ble_gap_dev_state.gap_scan_state != new_state.gap_scan_state)
         {
@@ -113,7 +85,7 @@ void ble_conn_state_evt_handler(uint8_t conn_id, T_GAP_CONN_STATE new_state, uin
 
     Serial.printf("ble_conn_state_evt_handler: conn_id %d old_state %d new_state %d, disc_cause 0x%x\n\r", conn_id, ble_gap_conn_state, new_state, disc_cause);
 
-    if (ble_dev_role == BLE_DEVICE_ROLE_CLIENT)
+    if (ble_dev_role == RPC_GAP_LINK_ROLE_MASTER)
     {
 
         if (conn_id >= BLE_CLIENT_MAX_LINKS)

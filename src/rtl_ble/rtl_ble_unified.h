@@ -13,6 +13,7 @@
 #include "gap_scan.h"
 #include "gap_storage_le.h"
 #include "gatt.h"
+#include "ble_common.h"
 #include "profile_client.h"
 #include "rpc_ble_api.h"
 #include "rpc_ble_api_hal.h"
