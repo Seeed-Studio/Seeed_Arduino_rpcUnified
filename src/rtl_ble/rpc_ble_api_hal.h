@@ -16,59 +16,6 @@
 #include "gap_storage_le.h"
 #include "app_msg.h"
 #include "profile_client.h"
-#include "Arduino.h"
-
-#define RPC_FUN_GAP_SET_PARAM(FUN, PARAM_TYPE)                     \
-    Serial.printf("%s called\n\r", #FUN);                          \
-    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;                           \
-    binary_t value;                                                \
-    value.dataLength = len;                                        \
-    value.data = (uint8_t *)p_value;                               \
-    ret = (T_GAP_CAUSE)rpc_##FUN((RPC_##PARAM_TYPE)param, &value); \
-    return ret
-
-#define RPC_FUN_GAP_GET_PARAM(FUN, PARAM_TYPE)                     \
-    Serial.printf("%s called\n\r", #FUN);                          \
-    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;                           \
-    binary_t value;                                                \
-    ret = (T_GAP_CAUSE)rpc_##FUN((RPC_##PARAM_TYPE)param, &value); \
-    if (GAP_SUCCESS == ret)                                        \
-        memcpy(p_value, value.data, value.dataLength);             \
-    erpc_free(value.data);                                         \
-    return ret
-
-#define RPC_FUN_GAP_VOID(FUN)             \
-    Serial.printf("%s called\n\r", #FUN); \
-    T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;  \
-    ret = (T_GAP_CAUSE)rpc_##FUN();       \
-    return ret
-
-#define RPC_FUN_RETURN_CAUSE_0(FUN) \
-    return (T_GAP_CAUSE)rpc_##FUN()
-
-#define RPC_FUN_RETURN_CAUSE_1(FUN, PARAM0) \
-    Serial.printf("%s called\n\r", #FUN);   \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0)
-
-#define RPC_FUN_RETURN_CAUSE_2(FUN, PARAM0, PARAM1) \
-    Serial.printf("%s called\n\r", #FUN);           \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1)
-
-#define RPC_FUN_RETURN_CAUSE_3(FUN, PARAM0, PARAM1, PARAM2) \
-    Serial.printf("%s called\n\r", #FUN);                   \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2)
-
-#define RPC_FUN_RETURN_CAUSE_4(FUN, PARAM0, PARAM1, PARAM2, PARAM3) \
-    Serial.printf("%s called\n\r", #FUN);                           \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3)
-
-#define RPC_FUN_RETURN_CAUSE_5(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4) \
-    Serial.printf("%s called\n\r", #FUN);                                   \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4)
-
-#define RPC_FUN_RETURN_CAUSE_6(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5) \
-    Serial.printf("%s called\n\r", #FUN);                                           \
-    return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5)
 
 typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 
