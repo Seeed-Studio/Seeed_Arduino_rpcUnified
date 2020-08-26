@@ -401,11 +401,23 @@ T_GAP_CAUSE le_update_conn_param(uint8_t conn_id,
 
 //! @name rpc_gatt_client
 //@{
+    
+extern P_FUN_GENERAL_APP_CB _ble_gattc_callback;
+void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback)
+{
+    _ble_gattc_callback = ble_gattc_callback;
+}
 
-// void client_init(uint8_t client_num)
-// {
-//     rpc_ble_client_init(client_num);
-// }
+bool ble_client_init(uint8_t num)
+{
+    return rpc_ble_client_init(num);
+}
+
+uint8_t ble_add_client(uint8_t app_id, uint8_t link_num)
+{
+    return rpc_ble_add_client(app_id, link_num);
+}
+
 T_GAP_CAUSE client_all_primary_srv_discovery(uint8_t conn_id, T_CLIENT_ID client_id)
 {
     RPC_FUN_RETURN_CAUSE_2(client_all_primary_srv_discovery, conn_id, client_id);

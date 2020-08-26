@@ -39,9 +39,6 @@
 /** @brief  Config server LE link number */
 #define BLE_SERVER_MAX_LINKS 1
 
-#define BLE_DEVICE_ROLE_SERVER 1
-#define BLE_DEVICE_ROLE_CLIENT 2
-
 
 /**
  * @brief  Application Link control block defination.

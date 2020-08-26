@@ -15,6 +15,7 @@
 #include "gap_scan.h"
 #include "gap_storage_le.h"
 #include "app_msg.h"
+#include "profile_client.h"
 #include "Arduino.h"
 
 #define RPC_FUN_GAP_SET_PARAM(FUN, PARAM_TYPE)                     \
@@ -46,27 +47,35 @@
     return (T_GAP_CAUSE)rpc_##FUN()
 
 #define RPC_FUN_RETURN_CAUSE_1(FUN, PARAM0) \
+    Serial.printf("%s called\n\r", #FUN);   \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0)
 
 #define RPC_FUN_RETURN_CAUSE_2(FUN, PARAM0, PARAM1) \
+    Serial.printf("%s called\n\r", #FUN);           \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1)
 
 #define RPC_FUN_RETURN_CAUSE_3(FUN, PARAM0, PARAM1, PARAM2) \
+    Serial.printf("%s called\n\r", #FUN);                   \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2)
 
 #define RPC_FUN_RETURN_CAUSE_4(FUN, PARAM0, PARAM1, PARAM2, PARAM3) \
+    Serial.printf("%s called\n\r", #FUN);                           \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3)
 
 #define RPC_FUN_RETURN_CAUSE_5(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4) \
+    Serial.printf("%s called\n\r", #FUN);                                   \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4)
 
 #define RPC_FUN_RETURN_CAUSE_6(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5) \
+    Serial.printf("%s called\n\r", #FUN);                                           \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5)
-
 
 typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);
 void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg);
+void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback);
+bool ble_client_init(uint8_t num);
+uint8_t ble_add_client(uint8_t app_id, uint8_t link_num);
 
 #endif /* _rpc_ble_api__hal_h_ */

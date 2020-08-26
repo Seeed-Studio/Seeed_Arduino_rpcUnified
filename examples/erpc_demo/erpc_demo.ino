@@ -26,6 +26,10 @@ T_APP_RESULT ble_gap_callback(uint8_t cb_type, void *p_cb_data)
   return result;
 }
 extern void ble_handle_gap_msg(T_IO_MSG *p_gap_msg);
+extern T_APP_RESULT ble_gatt_client_callback(T_CLIENT_ID client_id, uint8_t conn_id, void *p_data);
+
+uint8_t conn_id = 0xff;
+
 void setup()
 {
   // put your setup code here, to run once:
@@ -36,26 +40,71 @@ void setup()
   delay(2000);
   Serial.printf("rpc_ble_init\n\r");
   rpc_ble_init();
-  Serial.printf("rpc_gap_config_max_le_link_num\n\r");
-  rpc_gap_config_max_le_link_num(3);
-  Serial.printf("rpc_le_gap_init\n\r");
-  rpc_le_gap_init(3);
   Serial.printf("rpc_ble_start\n\r");
   le_register_app_cb(ble_gap_callback);
   le_register_msg_handler(ble_handle_gap_msg);
-  uint16_t _scanInterval = 0x400;              // Duration to wait between starting a scan. Value range: 0x0004 - 0x4000 (2.5ms - 10240ms)(0.625ms/step).
+  le_register_gattc_cb(ble_gatt_client_callback);
+  ble_client_init(BLE_CLIENT_MAX_APPS);
+  uint16_t _scanInterval = 0x520;          
   le_scan_set_param(GAP_PARAM_SCAN_INTERVAL, sizeof(_scanInterval), &_scanInterval);
   rpc_ble_start();
+  delay(1000);
+
+	 T_CLIENT_ID client_id = ble_add_client(0, BLE_CLIENT_MAX_LINKS);
 
   delay(1000);
   Serial.printf("rpc_le_scan_start\n\r");
   le_scan_start();
-  // delay(10000);
-  // rpc_le_scan_stop();
+  delay(2000);
+  le_scan_stop();
+
+  delay(2000);
+	Serial.printf("connecting...\n\r");
+	 uint8_t bd_addr[6] = {0x7d, 0x18, 0x1b, 0xf1, 0xf7, 0x2c};
+
+  T_GAP_LE_CONN_REQ_PARAM conn_req_param;
+	conn_req_param.scan_interval = 0x10;
+	conn_req_param.scan_window = 0x10;
+	conn_req_param.conn_interval_min = 80;
+	conn_req_param.conn_interval_max = 80;
+	conn_req_param.conn_latency = 0;
+	conn_req_param.supv_tout = 1000;
+	conn_req_param.ce_len_min = 2 * (conn_req_param.conn_interval_min - 1);
+	conn_req_param.ce_len_max = 2 * (conn_req_param.conn_interval_max - 1);
+
+	le_set_conn_param(GAP_CONN_PARAM_1M, &conn_req_param);
+
+  printf("cmd_con, DestAddr: 0x%2X:0x%2X:0x%2X:0x%2X:0x%2X:0x%2X\r\n",
+		   bd_addr[5], bd_addr[4], bd_addr[3], bd_addr[2], bd_addr[1], bd_addr[0]);
+	T_GAP_CAUSE result = le_connect(0, bd_addr, GAP_REMOTE_ADDR_LE_PUBLIC, GAP_LOCAL_ADDR_LE_PUBLIC, 1000);
+
+	if (result == GAP_CAUSE_SUCCESS)
+	{
+
+		Serial.printf("Connect successful\r\n");
+	}
+	else
+	{
+		Serial.printf("Connect failed:%d\r\n", result);
+		while (1)
+		{
+		}
+		
+	}
+  delay(2000);
+	le_get_conn_id(bd_addr, GAP_REMOTE_ADDR_LE_PUBLIC, &conn_id);
+	//Serial.printf("conn_id: %d\r\n", result);
+	delay(3000);
+	//T_GAP_CONN_INFO pConnInfo;
+	//le_get_conn_info(conn_id, &pConnInfo);
+	client_all_primary_srv_discovery(conn_id, client_id);
+
 }
 
 void loop()
 {
+  delay(1000);
+  Serial.printf(".");
   // rpc_le_scan_start();
   // delay(10000);
   // rpc_le_scan_stop();

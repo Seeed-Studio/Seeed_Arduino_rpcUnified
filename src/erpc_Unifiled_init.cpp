@@ -81,6 +81,11 @@ Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 2048, "runClient");
 void erpc_init()
 {
     Serial.printf("erpc init\n\r");
+    pinMode(RTL8720D_CHIP_PU, OUTPUT);
+    digitalWrite(RTL8720D_CHIP_PU, LOW);
+    delay(10);
+    digitalWrite(RTL8720D_CHIP_PU, HIGH);
+    delay(10);
     g_transport.init();
     g_arbitrator.setSharedTransport(&g_transport);
     g_arbitrator.setCodec(g_basicCodecFactory.create());

@@ -3,9 +3,11 @@
 
 P_FUN_LE_APP_CB _ble_gap_callback = NULL;
 P_FUN_HABDLE_GAP_MSG _handle_gap_msg = NULL;
+P_FUN_GENERAL_APP_CB _ble_gattc_callback = NULL;
 
-void rpc_ble_handle_gap_msg(const binary_t *gap_msg)
+RPC_T_APP_RESULT rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 {
+    RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
     // Serial.printf("rpc_ble_handle_gap_msg\n\r");
     // for (int i = 0; i < gap_msg->dataLength; i++)
     // {
@@ -18,6 +20,7 @@ void rpc_ble_handle_gap_msg(const binary_t *gap_msg)
     {
         _handle_gap_msg((T_IO_MSG *)gap_msg->data);
     }
+    return result;
 }
 
 RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
@@ -98,6 +101,30 @@ RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
         result = (RPC_T_APP_RESULT)_ble_gap_callback(cb_type, p_cb_data);
 
     free(p_cb_data);
+
+    return result;
+}
+
+RPC_T_APP_RESULT rpc_ble_gattc_callback(uint8_t client_id, uint8_t conn_id, const binary_t *cb_data, const binary_t *read_or_notify_data)
+{
+    Serial.printf("rpc_ble_gattc_callback call\n\r");
+    RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
+    T_BLE_CLIENT_CB_DATA *p_data = (T_BLE_CLIENT_CB_DATA *)cb_data->data;
+    Serial.printf("cb_data length %d read_or_notify_data length: %d\n\r", cb_data->dataLength, read_or_notify_data->dataLength);
+    switch (p_data->cb_type)
+    {
+    case BLE_CLIENT_CB_TYPE_READ_RESULT:
+        p_data->cb_content.read_result.p_value = read_or_notify_data->data;
+        break;
+    case BLE_CLIENT_CB_TYPE_NOTIF_IND:
+        p_data->cb_content.notif_ind.p_value = read_or_notify_data->data;
+        break;
+    default:
+        break;
+    }
+    
+    if (_ble_gattc_callback != NULL)
+        result = (RPC_T_APP_RESULT)_ble_gattc_callback(client_id, conn_id, p_data);
 
     return result;
 }
