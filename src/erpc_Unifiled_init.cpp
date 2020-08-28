@@ -14,8 +14,6 @@
 #include "erpc_port.h"
 #include "rtl_ble/rtl_ble_unified.h"
 
-
-
 using namespace erpc;
 
 class MyMessageBufferFactory : public MessageBufferFactory
@@ -75,7 +73,7 @@ void runServer(void *arg)
     }
 }
 
-Thread serverThread(&runServer, configMAX_PRIORITIES - 1, 2048, "runServer");
+Thread serverThread(&runServer, configMAX_PRIORITIES - 1, 4096, "runServer");
 Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 2048, "runClient");
 
 void erpc_init()
@@ -83,9 +81,9 @@ void erpc_init()
     Serial.printf("erpc init\n\r");
     pinMode(RTL8720D_CHIP_PU, OUTPUT);
     digitalWrite(RTL8720D_CHIP_PU, LOW);
-    delay(10);
+    delay(100);
     digitalWrite(RTL8720D_CHIP_PU, HIGH);
-    delay(10);
+    delay(100);
     g_transport.init();
     g_arbitrator.setSharedTransport(&g_transport);
     g_arbitrator.setCodec(g_basicCodecFactory.create());
