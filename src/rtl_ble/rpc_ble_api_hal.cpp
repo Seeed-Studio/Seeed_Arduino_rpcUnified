@@ -144,7 +144,7 @@ void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg)
 
 T_GAP_CAUSE le_set_gap_param(T_GAP_LE_PARAM_TYPE param, uint8_t len, void *p_value)
 {
-    RPC_FUN_GAP_GET_PARAM(le_set_gap_param, T_GAP_LE_PARAM_TYPE);
+    RPC_FUN_GAP_SET_PARAM(le_set_gap_param, T_GAP_LE_PARAM_TYPE);
 }
 T_GAP_CAUSE le_get_gap_param(T_GAP_LE_PARAM_TYPE param, void *p_value)
 {
