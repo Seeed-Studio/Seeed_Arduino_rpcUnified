@@ -543,4 +543,31 @@ uint8_t ble_create_desc(uint8_t app_id, uint8_t char_handle, ble_desc_t desc)
         return rpc_ble_create_desc(app_id, char_handle, desc.uuid, desc.uuid_length, desc.flags, desc.permissions, desc.vlaue_length, &value);
     }
 }
+
+bool server_attr_read_confirm(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_index, uint8_t *p_data, uint16_t length, T_APP_RESULT cause)
+{
+    binary_t data;
+    data.data = p_data;
+    data.dataLength = length;
+    return rpc_server_attr_read_confirm(conn_id, service_id, attrib_index, &data, (RPC_T_APP_RESULT)cause);
+}
+
+bool server_exec_write_confirm(uint8_t conn_id, uint16_t cause, uint16_t handle)
+{
+    return rpc_server_exec_write_confirm(conn_id, cause, handle);
+}
+
+bool server_attr_write_confirm(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_index, T_APP_RESULT cause)
+{
+    return rpc_server_attr_write_confirm(conn_id, service_id, attrib_index, (RPC_T_APP_RESULT)cause);
+}
+
+bool server_send_data(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_index, uint8_t *p_data, uint16_t data_len, T_GATT_PDU_TYPE type)
+{
+    binary_t data;
+    data.data = p_data;
+    data.dataLength = data_len;
+    return rpc_server_send_data(conn_id, service_id, attrib_index, &data, (RPC_T_GATT_PDU_TYPE)type);
+}
+
 //@}
