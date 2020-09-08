@@ -18,6 +18,7 @@
 #include "gap_storage_le.h"
 #include "app_msg.h"
 #include "profile_client.h"
+#include "profile_server.h"
 #include "rpc_unified_log.h"
 #include "Arduino.h"
 
@@ -72,5 +73,17 @@
 #define RPC_FUN_RETURN_CAUSE_6(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5) \
     RPC_INFO("%s called", #FUN);                                                    \
     return (T_GAP_CAUSE)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5)
+
+#define RPC_FUN_RETURN_0(FUN, RETURN) \
+    RPC_INFO("%s called", #FUN);      \
+    return (RETURN)rpc_##FUN();
+
+#define RPC_FUN_RETURN_1(FUN, PARAM0, RETURN) \
+    RPC_INFO("%s called", #FUN);              \
+    return (RETURN)rpc_##FUN(PARAM0)
+
+#define RPC_FUN_RETURN_2(FUN, PARAM0, PARAM1, RETURN) \
+    RPC_INFO("%s called", #FUN);                      \
+    return (RETURN)rpc_##FUN(PARAM0, PARAM1)
 
 #endif /* _rpc_ble_api_utils_h_ */

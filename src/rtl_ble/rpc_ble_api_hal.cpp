@@ -6,8 +6,12 @@
 #include "rpc_ble_api_hal.h"
 #include "rpc_ble_api.h"
 #include "gap_adv.h"
+#include "ble_common.h"
 #include "profile_client.h"
+#include "profile_server.h"
 #include "erpc_port.h"
+#include "ble_server.h"
+#include "ble_client.h"
 
 //! @brief Function to free space allocated inside struct binary_t
 static void free_binary_t_struct(binary_t *data);
@@ -21,6 +25,15 @@ static void free_binary_t_struct(binary_t *data)
     }
 }
 
+void ble_init()
+{
+    rpc_ble_init();
+}
+
+void ble_start()
+{
+    rpc_ble_start();
+}
 //! @name rpc_gap
 //@{
 T_GAP_CAUSE gap_set_param(T_GAP_PARAM_TYPE param, uint8_t len, void *p_value)
@@ -404,7 +417,7 @@ T_GAP_CAUSE le_update_conn_param(uint8_t conn_id,
 
 //! @name rpc_gatt_client
 //@{
-    
+
 extern P_FUN_GENERAL_APP_CB _ble_gattc_callback;
 void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback)
 {
@@ -487,5 +500,47 @@ T_GAP_CAUSE client_attr_write(uint8_t conn_id, T_CLIENT_ID client_id,
 T_GAP_CAUSE client_attr_ind_confirm(uint8_t conn_id)
 {
     RPC_FUN_RETURN_CAUSE_1(client_attr_ind_confirm, conn_id);
+}
+//@}
+
+//! @name rpc_gatt_server
+//@{
+bool ble_server_init(uint8_t num)
+{
+    RPC_FUN_RETURN_1(ble_server_init, (uint8_t)num, bool);
+}
+T_SERVER_ID ble_service_start(uint8_t app_id)
+{
+    RPC_FUN_RETURN_1(ble_service_start, (uint8_t)app_id, T_SERVER_ID);
+}
+uint8_t ble_create_service(ble_service_t service)
+{
+    return rpc_ble_create_service(service.uuid, service.uuid_length, service.is_primary);
+}
+bool ble_delete_service(uint8_t app_id)
+{
+    RPC_FUN_RETURN_1(ble_delete_service, (uint8_t)app_id, bool);
+}
+T_SERVER_ID ble_get_servie_handle(uint8_t app_id)
+{
+    RPC_FUN_RETURN_1(ble_get_servie_handle, (uint8_t)app_id, T_SERVER_ID);
+}
+uint8_t ble_create_char(uint8_t app_id, ble_char_t CHAR)
+{
+    return rpc_ble_create_char(app_id, CHAR.uuid, CHAR.uuid_length, CHAR.properties, CHAR.permissions);
+}
+uint8_t ble_create_desc(uint8_t app_id, uint8_t char_handle, ble_desc_t desc)
+{
+    if (desc.p_value == NULL)
+    {
+        return rpc_ble_create_desc(app_id, char_handle, desc.uuid, desc.uuid_length, desc.flags, desc.permissions, desc.vlaue_length, NULL);
+    }
+    else
+    {
+        binary_t value;
+        value.dataLength = desc.vlaue_length;
+        value.data = desc.p_value;
+        return rpc_ble_create_desc(app_id, char_handle, desc.uuid, desc.uuid_length, desc.flags, desc.permissions, desc.vlaue_length, &value);
+    }
 }
 //@}

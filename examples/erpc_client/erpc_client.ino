@@ -38,19 +38,20 @@ void setup()
   {
   };
   delay(2000);
-  Serial.printf("rpc_ble_init\n\r");
-  rpc_ble_init();
-  Serial.printf("rpc_ble_start\n\r");
+  Serial.printf("ble_init\n\r");
+  ble_init();
+
   le_register_app_cb(ble_gap_callback);
   le_register_msg_handler(ble_handle_gap_msg);
   le_register_gattc_cb(ble_gatt_client_callback);
   ble_client_init(BLE_CLIENT_MAX_APPS);
   uint16_t _scanInterval = 0x520;          
   le_scan_set_param(GAP_PARAM_SCAN_INTERVAL, sizeof(_scanInterval), &_scanInterval);
-  rpc_ble_start();
+  Serial.printf("ble_start\n\r");
+  ble_start();
   delay(1000);
 
-	 T_CLIENT_ID client_id = ble_add_client(0, BLE_CLIENT_MAX_LINKS);
+	 T_CLIENT_ID client_id = ble_add_client(0, BLE_LE_MAX_LINKS);
 
   delay(1000);
   Serial.printf("rpc_le_scan_start\n\r");

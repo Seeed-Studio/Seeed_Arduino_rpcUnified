@@ -9,6 +9,7 @@ P_FUN_GENERAL_APP_CB _ble_gattc_callback = NULL;
 
 RPC_T_APP_RESULT rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 {
+    RPC_INFO("rpc_ble_handle_gap_msg call");
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
 
     if (_handle_gap_msg)
@@ -20,6 +21,7 @@ RPC_T_APP_RESULT rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 
 RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
 {
+    RPC_INFO("rpc_ble_gap_callback call");
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
 
     T_LE_CB_DATA *p_cb_data = (T_LE_CB_DATA *)malloc(sizeof(T_LE_CB_DATA));

@@ -14,6 +14,7 @@
 #include "gap_storage_le.h"
 #include "gatt.h"
 #include "ble_client.h"
+#include "ble_server.h"
 #include "ble_common.h"
 #include "profile_client.h"
 #include "rpc_ble_header.h"

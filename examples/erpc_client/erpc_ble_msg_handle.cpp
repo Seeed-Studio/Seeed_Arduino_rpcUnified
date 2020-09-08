@@ -3,7 +3,7 @@
 
 T_GAP_DEV_STATE ble_gap_dev_state = {0, 0, 0, 0, 0}; /**< GAP device state */
 T_GAP_CONN_STATE ble_gap_conn_state = GAP_CONN_STATE_DISCONNECTED;
-T_APP_LINK ble_clinet_link_table[BLE_CLIENT_MAX_LINKS];
+T_APP_LINK ble_clinet_link_table[BLE_LE_MAX_LINKS];
 RPC_T_GAP_ROLE ble_dev_role = RPC_GAP_LINK_ROLE_MASTER; // 0:close 1:server 2:client
 
 /**
@@ -88,7 +88,7 @@ void ble_conn_state_evt_handler(uint8_t conn_id, T_GAP_CONN_STATE new_state, uin
     if (ble_dev_role == RPC_GAP_LINK_ROLE_MASTER)
     {
 
-        if (conn_id >= BLE_CLIENT_MAX_LINKS)
+        if (conn_id >= BLE_LE_MAX_LINKS)
         {
             return;
         }
