@@ -2,10 +2,12 @@
 #include "Arduino.h"
 #include "rtl_ble_unified.h"
 #include "rpc_unified_log.h"
+#include "erpc_port.h"
 
 P_FUN_LE_APP_CB _ble_gap_callback = NULL;
 P_FUN_HABDLE_GAP_MSG _handle_gap_msg = NULL;
 P_FUN_GENERAL_APP_CB _ble_gattc_callback = NULL;
+P_FUN_SERVER_GENERAL_CB _ble_gatts_callback = NULL;
 
 RPC_T_APP_RESULT rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 {
@@ -119,9 +121,76 @@ RPC_T_APP_RESULT rpc_ble_gattc_callback(uint8_t client_id, uint8_t conn_id, cons
     default:
         break;
     }
-    
+
     if (_ble_gattc_callback != NULL)
         result = (RPC_T_APP_RESULT)_ble_gattc_callback(client_id, conn_id, p_data);
 
+    return result;
+}
+
+RPC_T_APP_RESULT rpc_ble_gatts_callback(uint8_t gatt_if, uint8_t conn_id, uint16_t attrib_index, RPC_T_SERVICE_CALLBACK_TYPE event, uint16_t property, binary_t *read_cb_data, const binary_t *write_cb_data, const binary_t *app_cb_data)
+{
+    RPC_INFO("rpc_ble_gatts_callback call");
+    RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
+    ble_service_cb_data_t *cb_data = (ble_service_cb_data_t *)malloc(sizeof(ble_service_cb_data_t));
+
+    cb_data->attrib_handle = attrib_index;
+    cb_data->conn_id = conn_id;
+
+    switch (event)
+    {
+    case RPC_SERVICE_CALLBACK_TYPE_INDIFICATION_NOTIFICATION:
+    {
+        cb_data->event = SERVICE_CALLBACK_TYPE_INDIFICATION_NOTIFICATION;
+        cb_data->cb_data_context.cccd_update_data.cccbits = property;
+        break;
+    }
+    case RPC_SERVICE_CALLBACK_TYPE_READ_CHAR_VALUE:
+    {
+        cb_data->event = SERVICE_CALLBACK_TYPE_READ_CHAR_VALUE;
+        cb_data->cb_data_context.read_data.offset = property;
+        cb_data->cb_data_context.read_data.length = 0;
+        cb_data->cb_data_context.read_data.p_value = NULL;
+        break;
+    }
+    case RPC_SERVICE_CALLBACK_TYPE_WRITE_CHAR_VALUE:
+        cb_data->event = SERVICE_CALLBACK_TYPE_WRITE_CHAR_VALUE;
+        cb_data->cb_data_context.write_data.write_type = (T_WRITE_TYPE)property;
+        cb_data->cb_data_context.write_data.length = write_cb_data->dataLength;
+        cb_data->cb_data_context.write_data.p_value = write_cb_data->data;
+        break;
+    default:
+        break;
+    }
+
+    if (_ble_gatts_callback != NULL)
+        result = (RPC_T_APP_RESULT)_ble_gatts_callback((T_SERVER_ID)gatt_if, (void *)cb_data);
+
+    if (event == RPC_SERVICE_CALLBACK_TYPE_READ_CHAR_VALUE)
+    {
+        if (cb_data->cb_data_context.read_data.p_value == NULL)
+        {
+            uint8_t *data = (uint8_t *)erpc_malloc(sizeof(uint8_t) * 1);
+            *data = 0;
+            read_cb_data->data = data;
+            read_cb_data->dataLength = 1;
+        }
+        else
+        {
+            read_cb_data->dataLength = cb_data->cb_data_context.read_data.length;
+            uint8_t *data = (uint8_t *)erpc_malloc(sizeof(uint8_t) * read_cb_data->dataLength);
+            if (data == NULL)
+            {
+                read_cb_data->dataLength = 1;
+                data = (uint8_t *)erpc_malloc(sizeof(uint8_t) * 1);
+            }
+            else
+            {
+                memcpy(data, cb_data->cb_data_context.read_data.p_value, read_cb_data->dataLength);
+            }
+            read_cb_data->data = data;
+        }
+    }
+    free(cb_data);
     return result;
 }

@@ -54,6 +54,11 @@ extern "C" {
 
 void *erpc_malloc(size_t size)
 {
+    if(size == 0)
+    {
+        return NULL;
+    }
+    
     void *p = pvPortMalloc(size);
     return p;
 }

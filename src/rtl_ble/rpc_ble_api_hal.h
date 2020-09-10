@@ -19,11 +19,13 @@
 
 typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 
+
 void ble_start(void);
 void ble_init(void);
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);
 void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg);
 void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback);
+void le_register_gatts_cb(P_FUN_SERVER_GENERAL_CB ble_gatts_callback);
 bool ble_client_init(uint8_t num);
 uint8_t ble_add_client(uint8_t app_id, uint8_t link_num);
 

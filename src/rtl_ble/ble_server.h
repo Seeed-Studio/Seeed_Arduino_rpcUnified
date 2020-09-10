@@ -53,6 +53,38 @@ extern "C"
     uint8_t *p_value;
   } ble_desc_t;
 
+  typedef struct 
+  {
+    uint16_t cccbits;
+  }ble_service_cccd_update_data_t;
+
+  typedef struct 
+  {
+    T_WRITE_TYPE write_type;
+    uint16_t length;
+    uint8_t *p_value; 
+  }ble_service_write_data_t;
+
+  typedef struct 
+  {
+    uint16_t offset;
+    uint16_t length;
+    uint8_t *p_value; 
+  }ble_service_read_data_t;
+  
+  typedef struct
+  {
+    T_SERVICE_CALLBACK_TYPE event;
+    uint8_t conn_id;
+    uint16_t attrib_handle;
+    union 
+    {
+      ble_service_cccd_update_data_t cccd_update_data;
+      ble_service_write_data_t write_data;
+      ble_service_read_data_t read_data;
+    }cb_data_context;
+  }ble_service_cb_data_t;
+  
   /*============================================================================*
  *                              Funtions
  *============================================================================*/

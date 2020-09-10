@@ -505,6 +505,12 @@ T_GAP_CAUSE client_attr_ind_confirm(uint8_t conn_id)
 
 //! @name rpc_gatt_server
 //@{
+extern P_FUN_SERVER_GENERAL_CB _ble_gatts_callback;
+void le_register_gatts_cb(P_FUN_SERVER_GENERAL_CB ble_gatts_callback)
+{
+    _ble_gatts_callback = ble_gatts_callback;
+}
+
 bool ble_server_init(uint8_t num)
 {
     RPC_FUN_RETURN_1(ble_server_init, (uint8_t)num, bool);
