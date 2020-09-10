@@ -55,6 +55,9 @@
 /** @brief  Default maximum advertising interval */
 #define DEFAULT_ADVERTISING_INTERVAL_MAX 400
 
+/** @brief For GAP le scan complete evernt */
+#define GAP_MSG_LE_SCAN_CMPL     0x34
+
 /**
  * @brief  Application Link control block defination.
  */
@@ -64,6 +67,5 @@ typedef struct
   T_GAP_REMOTE_ADDR_TYPE bd_type;   /**< remote BD type*/
   uint8_t bd_addr[GAP_BD_ADDR_LEN]; /**< remote BD */
 } T_APP_LINK;
-
 
 #endif /* _RPC_BLE_FLAGS_H_ */

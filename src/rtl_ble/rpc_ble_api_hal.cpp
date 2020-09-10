@@ -296,6 +296,11 @@ T_GAP_CAUSE le_scan_start(void)
     RPC_FUN_GAP_VOID(le_scan_start);
 }
 
+T_GAP_CAUSE le_scan_timer_start(uint32_t tick)
+{
+    RPC_FUN_RETURN_1(le_scan_timer_start, (uint32_t)tick, T_GAP_CAUSE);
+}
+
 T_GAP_CAUSE le_scan_stop(void)
 {
     RPC_FUN_GAP_VOID(le_scan_stop);

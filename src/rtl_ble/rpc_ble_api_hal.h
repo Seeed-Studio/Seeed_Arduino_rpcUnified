@@ -28,5 +28,6 @@ void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback);
 void le_register_gatts_cb(P_FUN_SERVER_GENERAL_CB ble_gatts_callback);
 bool ble_client_init(uint8_t num);
 uint8_t ble_add_client(uint8_t app_id, uint8_t link_num);
+T_GAP_CAUSE le_scan_timer_start(uint32_t tick);
 
 #endif /* _rpc_ble_api__hal_h_ */
