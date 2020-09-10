@@ -148,12 +148,13 @@ void setup()
 uint8_t battlevel = 0;
 void loop()
 {
-  battlevel = (battlevel + 1)%100;
+ 
   if (isNotify)
   {
+    battlevel = (battlevel + 1)%100;
     server_send_data(0, srcv_handle, char_handle, &battlevel, 1, GATT_PDU_TYPE_ANY);
+    Serial.println(battlevel);
   }
-  Serial.println(battlevel);
   delay(1000);
   // rpc_le_scan_start();
   // delay(10000);
