@@ -11,19 +11,20 @@ P_FUN_SERVER_GENERAL_CB _ble_gatts_callback = NULL;
 
 RPC_T_APP_RESULT rpc_ble_handle_gap_msg(const binary_t *gap_msg)
 {
-    RPC_INFO("rpc_ble_handle_gap_msg call");
+    FUNC_ENTRY;
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
 
     if (_handle_gap_msg)
     {
         _handle_gap_msg((T_IO_MSG *)gap_msg->data);
     }
+    FUNC_EXIT;
     return result;
 }
 
 RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
 {
-    RPC_INFO("rpc_ble_gap_callback call");
+    FUNC_ENTRY;
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
 
     T_LE_CB_DATA *p_cb_data = (T_LE_CB_DATA *)malloc(sizeof(T_LE_CB_DATA));
@@ -100,16 +101,15 @@ RPC_T_APP_RESULT rpc_ble_gap_callback(uint8_t cb_type, const binary_t *cb_data)
         result = (RPC_T_APP_RESULT)_ble_gap_callback(cb_type, p_cb_data);
 
     free(p_cb_data);
-
+    FUNC_EXIT;
     return result;
 }
 
 RPC_T_APP_RESULT rpc_ble_gattc_callback(uint8_t client_id, uint8_t conn_id, const binary_t *cb_data, const binary_t *read_or_notify_data)
 {
-    RPC_INFO("rpc_ble_gattc_callback call");
+    FUNC_ENTRY;
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
     T_BLE_CLIENT_CB_DATA *p_data = (T_BLE_CLIENT_CB_DATA *)cb_data->data;
-    RPC_INFO("cb_data length %d read_or_notify_data length: %d", cb_data->dataLength, read_or_notify_data->dataLength);
     switch (p_data->cb_type)
     {
     case BLE_CLIENT_CB_TYPE_READ_RESULT:
@@ -124,13 +124,13 @@ RPC_T_APP_RESULT rpc_ble_gattc_callback(uint8_t client_id, uint8_t conn_id, cons
 
     if (_ble_gattc_callback != NULL)
         result = (RPC_T_APP_RESULT)_ble_gattc_callback(client_id, conn_id, p_data);
-
+    FUNC_EXIT;
     return result;
 }
 
 RPC_T_APP_RESULT rpc_ble_gatts_callback(uint8_t gatt_if, uint8_t conn_id, uint16_t attrib_index, RPC_T_SERVICE_CALLBACK_TYPE event, uint16_t property, binary_t *read_cb_data, const binary_t *write_cb_data, const binary_t *app_cb_data)
 {
-    RPC_INFO("rpc_ble_gatts_callback call");
+    FUNC_ENTRY;
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
     ble_service_cb_data_t *cb_data = (ble_service_cb_data_t *)malloc(sizeof(ble_service_cb_data_t));
 
@@ -192,5 +192,6 @@ RPC_T_APP_RESULT rpc_ble_gatts_callback(uint8_t gatt_if, uint8_t conn_id, uint16
         }
     }
     free(cb_data);
+    FUNC_EXIT;
     return result;
 }

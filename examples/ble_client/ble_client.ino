@@ -110,7 +110,6 @@ void setup()
 void loop()
 {
   delay(1000);
-  Serial.printf(".");
   // rpc_le_scan_start();
   // delay(10000);
   // rpc_le_scan_stop();
