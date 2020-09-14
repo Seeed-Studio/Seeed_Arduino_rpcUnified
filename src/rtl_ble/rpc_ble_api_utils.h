@@ -86,4 +86,19 @@
     RPC_INFO("%s called", #FUN);                      \
     return (RETURN)rpc_##FUN(PARAM0, PARAM1)
 
+#define RPC_FUN_RETURN_3(FUN, PARAM0, PARAM1, PARAM2, RETURN) \
+    RPC_INFO("%s called", #FUN);                              \
+    return (RETURN)rpc_##FUN(PARAM0, PARAM1, PARAM2)
+
+#define RPC_FUN_RETURN_4(FUN, PARAM0, PARAM1, PARAM2, PARAM3, RETURN) \
+    RPC_INFO("%s called", #FUN);                                      \
+    return (RETURN)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3).
+
+#define RPC_FUN_RETURN_5(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, RETURN) \
+    RPC_INFO("%s called", #FUN);                                              \
+    return (RETURN)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4)
+
+#define RPC_FUN_RETURN_6(FUN, PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5, RETURN) \
+    RPC_INFO("%s called", #FUN);                                                      \
+    return (RETURN)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5)
 #endif /* _rpc_ble_api_utils_h_ */

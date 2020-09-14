@@ -22,9 +22,4 @@
 #include "rpc_ble_api_hal.h"
 #include "rpc_ble_callback_server.h"
 #include "app_msg.h"
-
-
 #endif /* RTL_BLE_UNIFIED_H */
-
-
-

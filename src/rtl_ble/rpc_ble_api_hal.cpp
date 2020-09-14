@@ -527,6 +527,7 @@ T_GAP_CAUSE client_attr_ind_confirm(uint8_t conn_id)
 extern P_FUN_SERVER_GENERAL_CB _ble_gatts_callback;
 void le_register_gatts_cb(P_FUN_SERVER_GENERAL_CB ble_gatts_callback)
 {
+    RPC_INFO("le_register_gatts_cbcalled");
     _ble_gatts_callback = ble_gatts_callback;
 }
 
@@ -614,5 +615,96 @@ bool server_send_data(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_i
     data.dataLength = data_len;
     return rpc_server_send_data(conn_id, service_id, attrib_index, &data, (RPC_T_GATT_PDU_TYPE)type);
 }
+//@}
 
+//! @name rpc_gap_storage
+//@{
+uint32_t flash_save_local_name(T_LOCAL_NAME *p_data)
+{
+    RPC_FUN_RETURN_1(flash_save_local_name, (RPC_T_LOCAL_NAME *)p_data, uint32_t);
+}
+
+uint32_t flash_load_local_name(T_LOCAL_NAME *p_data)
+{
+    RPC_FUN_RETURN_1(flash_load_local_name, (RPC_T_LOCAL_NAME *)p_data, uint32_t);
+}
+
+uint32_t flash_save_local_appearance(T_LOCAL_APPEARANCE *p_data)
+{
+    RPC_FUN_RETURN_1(flash_save_local_appearance, (RPC_T_LOCAL_APPEARANCE *)p_data, uint32_t);
+}
+
+uint32_t flash_load_local_appearance(T_LOCAL_APPEARANCE *p_data)
+{
+    RPC_FUN_RETURN_1(flash_load_local_appearance, (RPC_T_LOCAL_APPEARANCE *)p_data, uint32_t);
+}
+
+T_LE_KEY_ENTRY *le_find_key_entry(uint8_t *bd_addr, T_GAP_REMOTE_ADDR_TYPE bd_type)
+{
+    RPC_FUN_RETURN_2(le_find_key_entry, bd_addr, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type, T_LE_KEY_ENTRY *);
+}
+
+T_LE_KEY_ENTRY *le_find_key_entry_by_idx(uint8_t idx)
+{
+    RPC_FUN_RETURN_1(le_find_key_entry_by_idx, idx, T_LE_KEY_ENTRY *);
+}
+
+uint8_t le_get_bond_dev_num(void)
+{
+    RPC_FUN_RETURN_0(le_get_bond_dev_num, uint8_t);
+}
+
+T_LE_KEY_ENTRY *le_get_low_priority_bond(void)
+{
+    RPC_FUN_RETURN_0(le_get_low_priority_bond, T_LE_KEY_ENTRY *);
+}
+
+T_LE_KEY_ENTRY *le_get_high_priority_bond(void)
+{
+    RPC_FUN_RETURN_0(le_get_high_priority_bond, T_LE_KEY_ENTRY *);
+}
+
+bool le_set_high_priority_bond(uint8_t *bd_addr, T_GAP_REMOTE_ADDR_TYPE bd_type)
+{
+    RPC_FUN_RETURN_2(le_find_key_entry, bd_addr, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type, bool);
+}
+
+bool le_resolve_random_address(uint8_t *unresolved_addr, uint8_t *resolved_addr,
+                               T_GAP_IDENT_ADDR_TYPE *resolved_addr_type)
+{
+    RPC_FUN_RETURN_3(le_resolve_random_address, unresolved_addr, resolved_addr, (RPC_T_GAP_IDENT_ADDR_TYPE *)resolved_addr_type, bool);
+}
+
+bool le_get_cccd_data(T_LE_KEY_ENTRY *p_entry, T_LE_CCCD *p_data)
+{
+    RPC_FUN_RETURN_2(le_get_cccd_data, (RPC_T_LE_KEY_ENTRY *)p_entry, (RPC_T_LE_CCCD *)p_data, bool);
+}
+
+bool le_gen_bond_dev(uint8_t *bd_addr, T_GAP_REMOTE_ADDR_TYPE bd_type,
+                     T_GAP_LOCAL_ADDR_TYPE local_bd_type,
+                     uint8_t ltk_length, uint8_t *local_ltk, T_LE_KEY_TYPE key_type, T_LE_CCCD *p_cccd)
+{
+    binary_t data;
+    data.dataLength = ltk_length;
+    data.data = local_ltk;
+    RPC_FUN_RETURN_6(le_gen_bond_dev, bd_addr, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type, (RPC_T_GAP_LOCAL_ADDR_TYPE)local_bd_type, &data, (RPC_T_LE_KEY_TYPE)key_type, (RPC_T_LE_CCCD *)p_cccd, bool);
+}
+
+uint16_t le_get_dev_bond_info_len(void)
+{
+    RPC_FUN_RETURN_0(le_get_dev_bond_info_len, uint16_t);
+}
+
+// bool le_get_dev_bond_info(T_LE_KEY_ENTRY *p_entry, uint8_t *p_data)
+// {
+//     RPC_FUN_RETURN_2(le_get_dev_bond_info, (RPC_T_LE_KEY_ENTRY *)p_entry, p_data, bool);
+// }
+
+T_LE_KEY_ENTRY *le_set_dev_bond_info(uint16_t length, uint8_t *p_data, bool *exist)
+{
+    binary_t data;
+    data.dataLength = length;
+    data.data = p_data;
+    RPC_FUN_RETURN_2(le_set_dev_bond_info, &data, exist, T_LE_KEY_ENTRY *);
+}
 //@}

@@ -132,12 +132,12 @@ void loop()
     Serial.println(battlevel);
   }
   uint16_t value_length = ble_server_get_attr_value(srcv_app_id,  desc_handle2, temp);
-  Serial.println("desc_handle2 value: ");
-  for(uint16_t i = 0; i < value_length; i++)
-  {
-      Serial.printf("%02x ", temp[i]);
-  }
-  Serial.println(" ");
+  // Serial.println("desc_handle2 value: ");
+  // for(uint16_t i = 0; i < value_length; i++)
+  // {
+  //     Serial.printf("%02x ", temp[i]);
+  // }
+  // Serial.println(" ");
   delay(1000);
   // rpc_le_scan_start();
   // delay(10000);
