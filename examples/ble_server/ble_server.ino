@@ -46,6 +46,7 @@ static const uint8_t adv_data[] =
         'L',
 };
 char v1_user_descr[] = "V1 read characteristic";
+uint16_t default_value = 0x00;
 uint8_t srcv_app_id = 0;
 uint8_t srcv_handle = 0;
 uint8_t char_handle = 0;
@@ -89,13 +90,13 @@ void setup()
   Serial.printf("char_handle: %d\n\r", char_handle);
   ble_desc_t desc;
 
-  desc.flags = ATTRIB_FLAG_VALUE_INCL | ATTRIB_FLAG_CCCD_APPL;
+  desc.flags =  ATTRIB_FLAG_CCCD_APPL;
   desc.uuid_length = UUID_16BIT_SIZE;
   uint16_t desc_uuid = 0x2902;
   uint16_t default_vlaue = 0x0000;
   memcpy(&(desc.uuid), &desc_uuid, 2);
   memcpy(&(desc.uuid[2]), &default_vlaue, 2);
-  desc.p_value = NULL;
+  desc.p_value = (uint8_t *)&default_value;
   desc.vlaue_length = 2;
   desc.permissions = (GATT_PERM_READ | GATT_PERM_WRITE);
   desc_handle1 = ble_create_desc(srcv_app_id, char_handle, desc);
@@ -108,7 +109,7 @@ void setup()
   memcpy(&(desc2.uuid), &desc2_uuid, 2);
   desc2.p_value = (uint8_t *)v1_user_descr;
   desc2.vlaue_length = (sizeof(v1_user_descr) - 1);
-  desc2.permissions = (GATT_PERM_READ);
+  desc2.permissions = (GATT_PERM_READ | GATT_PERM_WRITE);
   desc_handle2 = ble_create_desc(srcv_app_id, char_handle, desc2);
   Serial.printf("desc_handle2: %d\n\r", desc_handle2);
 
@@ -120,6 +121,7 @@ void setup()
   le_adv_start();
 }
 uint8_t battlevel = 0;
+uint8_t temp[100];
 void loop()
 {
  
@@ -129,6 +131,13 @@ void loop()
     server_send_data(0, srcv_handle, char_handle, &battlevel, 1, GATT_PDU_TYPE_ANY);
     Serial.println(battlevel);
   }
+  uint16_t value_length = ble_server_get_attr_value(srcv_app_id,  desc_handle2, temp);
+  Serial.println("desc_handle2 value: ");
+  for(uint16_t i = 0; i < value_length; i++)
+  {
+      Serial.printf("%02x ", temp[i]);
+  }
+  Serial.println(" ");
   delay(1000);
   // rpc_le_scan_start();
   // delay(10000);

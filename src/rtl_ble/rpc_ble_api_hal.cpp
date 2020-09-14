@@ -27,11 +27,13 @@ static void free_binary_t_struct(binary_t *data)
 
 void ble_init()
 {
+    RPC_INFO("ble_init called");
     rpc_ble_init();
 }
 
 void ble_start()
 {
+    RPC_INFO("ble_start called");
     rpc_ble_start();
 }
 //! @name rpc_gap
@@ -59,12 +61,14 @@ T_GAP_CAUSE le_bond_set_param(T_LE_BOND_PARAM_TYPE param, uint8_t len, void *p_v
 }
 T_GAP_CAUSE le_bond_pair(uint8_t conn_id)
 {
+    RPC_INFO("le_bond_pair called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_pair(conn_id);
     return ret;
 }
 T_GAP_CAUSE le_bond_get_display_key(uint8_t conn_id, uint32_t *p_key)
 {
+    RPC_INFO("le_bond_get_display_key called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_get_display_key(conn_id, p_key);
     return ret;
@@ -72,58 +76,68 @@ T_GAP_CAUSE le_bond_get_display_key(uint8_t conn_id, uint32_t *p_key)
 T_GAP_CAUSE le_bond_passkey_input_confirm(uint8_t conn_id, uint32_t passcode,
                                           T_GAP_CFM_CAUSE cause)
 {
+    RPC_INFO("le_bond_passkey_input_confirm called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_passkey_input_confirm(conn_id, passcode, (RPC_T_GAP_CFM_CAUSE)cause);
     return ret;
 }
 T_GAP_CAUSE le_bond_oob_input_confirm(uint8_t conn_id, T_GAP_CFM_CAUSE cause)
 {
+    RPC_INFO("le_bond_oob_input_confirm called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_oob_input_confirm(conn_id, (RPC_T_GAP_CFM_CAUSE)cause);
     return ret;
 }
 T_GAP_CAUSE le_bond_just_work_confirm(uint8_t conn_id, T_GAP_CFM_CAUSE cause)
 {
+    RPC_INFO("le_bond_just_work_confirm called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_just_work_confirm(conn_id, (RPC_T_GAP_CFM_CAUSE)cause);
     return ret;
 }
 T_GAP_CAUSE le_bond_passkey_display_confirm(uint8_t conn_id, T_GAP_CFM_CAUSE cause)
 {
+    RPC_INFO("le_bond_passkey_display_confirm called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_passkey_display_confirm(conn_id, (RPC_T_GAP_CFM_CAUSE)cause);
     return ret;
 }
 T_GAP_CAUSE le_bond_user_confirm(uint8_t conn_id, T_GAP_CFM_CAUSE cause)
 {
+    RPC_INFO("le_bond_user_confirm called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_user_confirm(conn_id, (RPC_T_GAP_CFM_CAUSE)cause);
     return ret;
 }
 T_GAP_CAUSE le_bond_cfg_local_key_distribute(uint8_t init_dist, uint8_t rsp_dist)
 {
+    RPC_INFO("le_bond_cfg_local_key_distribute called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_cfg_local_key_distribute(init_dist, rsp_dist);
     return ret;
 }
 void le_bond_clear_all_keys(void)
 {
+    RPC_INFO("le_bond_clear_all_keys called");
     return rpc_le_bond_clear_all_keys();
 }
 T_GAP_CAUSE le_bond_delete_by_idx(uint8_t idx)
 {
+    RPC_INFO("le_bond_delete_by_idx called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_delete_by_idx(idx);
     return ret;
 }
 T_GAP_CAUSE le_bond_delete_by_bd(uint8_t *bd_addr, T_GAP_REMOTE_ADDR_TYPE bd_type)
 {
+    RPC_INFO("le_bond_delete_by_bd called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_delete_by_bd(bd_addr, (RPC_T_GAP_REMOTE_ADDR_TYPE)bd_type);
     return ret;
 }
 T_GAP_CAUSE le_bond_get_sec_level(uint8_t conn_id, T_GAP_SEC_LEVEL *p_type)
 {
+    RPC_INFO("le_bond_get_sec_level called");
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     ret = (T_GAP_CAUSE)rpc_le_bond_get_sec_level(conn_id, (RPC_T_GAP_SEC_LEVEL *)p_type);
     return ret;
@@ -134,11 +148,11 @@ T_GAP_CAUSE le_bond_get_sec_level(uint8_t conn_id, T_GAP_SEC_LEVEL *p_type)
 //@{
 bool le_gap_init(uint8_t link_num)
 {
-    return rpc_le_gap_init(link_num);
+    RPC_FUN_RETURN_1(le_gap_init, link_num, bool);
 }
 void le_gap_msg_info_way(bool use_msg)
 {
-    return rpc_le_gap_msg_info_way(use_msg);
+    RPC_FUN_RETURN_1(le_gap_msg_info_way, use_msg, void);
 }
 uint8_t le_get_max_link_num(void)
 {
@@ -536,11 +550,11 @@ T_SERVER_ID ble_get_servie_handle(uint8_t app_id)
 {
     RPC_FUN_RETURN_1(ble_get_servie_handle, (uint8_t)app_id, T_SERVER_ID);
 }
-uint8_t ble_create_char(uint8_t app_id, ble_char_t CHAR)
+uint16_t ble_create_char(uint8_t app_id, ble_char_t CHAR)
 {
     return rpc_ble_create_char(app_id, CHAR.uuid, CHAR.uuid_length, CHAR.properties, CHAR.permissions);
 }
-uint8_t ble_create_desc(uint8_t app_id, uint8_t char_handle, ble_desc_t desc)
+uint16_t ble_create_desc(uint8_t app_id, uint16_t char_handle, ble_desc_t desc)
 {
     if (desc.p_value == NULL)
     {
@@ -553,6 +567,26 @@ uint8_t ble_create_desc(uint8_t app_id, uint8_t char_handle, ble_desc_t desc)
         value.data = desc.p_value;
         return rpc_ble_create_desc(app_id, char_handle, desc.uuid, desc.uuid_length, desc.flags, desc.permissions, desc.vlaue_length, &value);
     }
+}
+
+uint16_t ble_server_get_attr_value(uint8_t app_id, uint16_t handle, uint8_t *p_value)
+{
+    binary_t *data = rpc_ble_server_get_attr_value(app_id, handle);
+    uint16_t value_len = 0;
+    if (data != NULL)
+    {
+        memcpy(p_value, data->data, data->dataLength);
+        value_len = data->dataLength;
+        if (data)
+        {
+            free_binary_t_struct(data);
+        }
+        if (data)
+        {
+            erpc_free(data);
+        }
+    }
+    return value_len;
 }
 
 bool server_attr_read_confirm(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_index, uint8_t *p_data, uint16_t length, T_APP_RESULT cause)
