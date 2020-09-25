@@ -17,9 +17,6 @@
 #include "ble_server.h"
 #include "ble_common.h"
 #include "profile_client.h"
-#include "rpc_ble_header.h"
-#include "rpc_ble_api.h"
-#include "rpc_ble_api_hal.h"
-#include "rpc_ble_callback_server.h"
 #include "app_msg.h"
+#include "rpc_ble_api_hal.h"
 #endif /* RTL_BLE_UNIFIED_H */

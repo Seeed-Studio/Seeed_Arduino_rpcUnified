@@ -13,6 +13,7 @@
 #include "erpc_transport_arbitrator.h"
 #include "erpc_port.h"
 #include "rtl_ble/rtl_ble_unified.h"
+#include "erpc_shim/erpc_shim_unified.h"
 
 using namespace erpc;
 
@@ -103,7 +104,7 @@ void runServer(void *arg)
 }
 
 Thread serverThread(&runServer, configMAX_PRIORITIES - 1, 4096, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 2048, "runClient");
+Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 4096, "runClient");
 
 void erpc_init()
 {

@@ -1,6 +1,7 @@
 #define TAG "CALLBACK"
 #include "Arduino.h"
 #include "rtl_ble_unified.h"
+#include "../erpc_shim/erpc_shim_unified.h"
 #include "rpc_unified_log.h"
 #include "erpc_port.h"
 

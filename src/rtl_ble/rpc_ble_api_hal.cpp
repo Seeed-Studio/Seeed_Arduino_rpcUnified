@@ -2,9 +2,9 @@
 #define TAG "API"
 #include <stdlib.h>
 #include <string.h>
+#include "../erpc_shim/erpc_shim_unified.h"
 #include "rpc_ble_api_utils.h"
 #include "rpc_ble_api_hal.h"
-#include "rpc_ble_api.h"
 #include "gap_adv.h"
 #include "ble_common.h"
 #include "profile_client.h"
