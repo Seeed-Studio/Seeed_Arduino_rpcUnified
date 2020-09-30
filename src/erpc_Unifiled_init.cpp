@@ -37,35 +37,35 @@ public:
 
 // Uart ble_uart(&SERCOM_GPIO_SERIAL_X, PIN_GPIO_SERIAL_X_RX, PIN_GPIO_SERIAL_X_TX, PAD_GPIO_SERIAL_X_RX, PAD_GPIO_SERIAL_X_TX);
 // INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_X(ble_uart)
+#define ble_uart Serial1
+// #define PIN_BLE_SERIAL_X_RX (84ul)
+// #define PIN_BLE_SERIAL_X_TX (85ul)
+// #define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
+// #define PAD_BLE_SERIAL_X_TX (UART_TX_PAD_0)
+// #define SERCOM_BLE_SERIAL_X sercom0
+// #define INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(uart) \
+//  void SERCOM0_0_Handler() \
+//  { \
+//   (uart).IrqHandler(); \
+//  } \
+//  void SERCOM0_1_Handler() \
+//  { \
+//   (uart).IrqHandler(); \
+//  } \
+//  void SERCOM0_2_Handler() \
+//  { \
+//   (uart).IrqHandler(); \
+//  } \
+//  void SERCOM0_3_Handler() \
+//  { \
+//   (uart).IrqHandler(); \
+//  }
 
-#define PIN_BLE_SERIAL_X_RX (84ul)
-#define PIN_BLE_SERIAL_X_TX (85ul)
-#define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
-#define PAD_BLE_SERIAL_X_TX (UART_TX_PAD_0)
-#define SERCOM_BLE_SERIAL_X sercom0
-#define INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(uart) \
- void SERCOM0_0_Handler() \
- { \
-  (uart).IrqHandler(); \
- } \
- void SERCOM0_1_Handler() \
- { \
-  (uart).IrqHandler(); \
- } \
- void SERCOM0_2_Handler() \
- { \
-  (uart).IrqHandler(); \
- } \
- void SERCOM0_3_Handler() \
- { \
-  (uart).IrqHandler(); \
- }
-
-Uart ble_uart(&SERCOM_BLE_SERIAL_X, PIN_BLE_SERIAL_X_RX, PIN_BLE_SERIAL_X_TX, PAD_BLE_SERIAL_X_RX, PAD_BLE_SERIAL_X_TX);
-extern "C"
-{
-INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
-}
+// Uart ble_uart(&SERCOM_BLE_SERIAL_X, PIN_BLE_SERIAL_X_RX, PIN_BLE_SERIAL_X_TX, PAD_BLE_SERIAL_X_RX, PAD_BLE_SERIAL_X_TX);
+// extern "C"
+// {
+// INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
+// }
 
 UartTransport g_transport(&ble_uart, 115200);
 MyMessageBufferFactory g_msgFactory;

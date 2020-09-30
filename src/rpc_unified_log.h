@@ -15,7 +15,7 @@ extern "C"
 #define ENABLE_RPC_WARN
 #define ENABLE_RPC_INFO
 #define ENABLE_RPC_ERROR
-//#define ENABLE_RPC_TRACE
+#define ENABLE_RPC_TRACE
 
 	extern void rpc_printf(const char *format, ...);
 /**
@@ -72,7 +72,7 @@ extern "C"
 #ifdef ENABLE_RPC_INFO
 #define RPC_INFO(...)            \
 	{                            \
-		rpc_printf("%s: ", TAG); \
+		rpc_printf("[%s]: ", TAG); \
 		rpc_printf(__VA_ARGS__); \
 		rpc_printf("\n\r");      \
 	}

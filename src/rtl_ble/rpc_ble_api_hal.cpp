@@ -1,5 +1,5 @@
 
-#define TAG "API"
+#define TAG "BLE API"
 #include <stdlib.h>
 #include <string.h>
 #include "../erpc_shim/erpc_shim_unified.h"
