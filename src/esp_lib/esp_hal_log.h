@@ -152,12 +152,12 @@ int log_printf(const char* fmt, ...);
 
 extern int dump_tasks(void);
 
-#ifdef __cplusplus
-}
-#endif
-
 extern void rpc_printf(const char *format, ...);
 
 #define log_printf rpc_printf
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __ESP_LOGGING_H__ */

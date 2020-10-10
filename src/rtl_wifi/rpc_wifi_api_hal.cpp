@@ -311,12 +311,12 @@ int wifi_start_ap(
     binary_t b_ssid;
     binary_t b_pasword;
 
-    b_ssid.dataLength = ssid_len;
+    b_ssid.dataLength = ssid_len + 1;
     b_ssid.data = (uint8_t *)ssid;
 
-    b_pasword.dataLength = password_len;
+    b_pasword.dataLength = password_len + 1;
     b_pasword.data = (uint8_t *)password;
-
+    RPC_INFO("password: %s\n\r", password);
     int ret = 0;
     ret = rpc_wifi_start_ap(&b_ssid, &b_pasword, security_type, channel);
     FUNC_EXIT;
@@ -336,10 +336,10 @@ int wifi_start_ap_with_hidden_ssid(
     binary_t b_ssid;
     binary_t b_pasword;
 
-    b_ssid.dataLength = ssid_len;
+    b_ssid.dataLength = ssid_len + 1;
     b_ssid.data = (uint8_t *)ssid;
 
-    b_pasword.dataLength = password_len;
+    b_pasword.dataLength = password_len + 1;
     b_pasword.data = (uint8_t *)password;
 
     int ret = 0;
@@ -515,7 +515,7 @@ esp_err_t tcpip_adapter_sta_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info
     }
     binary_t _mac;
     binary_t _ip_info;
-    _mac.dataLength = strlen((char *)mac);
+    _mac.dataLength = strlen((char *)mac) + 1;
     _mac.data = mac;
     _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
     _ip_info.data = (uint8_t *)ip_info;
@@ -534,7 +534,7 @@ esp_err_t tcpip_adapter_ap_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
     }
     binary_t _mac;
     binary_t _ip_info;
-    _mac.dataLength = strlen((char *)mac);
+    _mac.dataLength = strlen((char *)mac) + 1;
     _mac.data = mac;
     _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
     _ip_info.data = (uint8_t *)ip_info;
@@ -668,7 +668,7 @@ esp_err_t tcpip_adapter_set_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
         return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
     }
     binary_t _mac;
-    _mac.dataLength = strlen((char *)mac);
+    _mac.dataLength = strlen((char *)mac) + 1;
     _mac.data = (uint8_t *)mac;
     ret = (esp_err_t)rpc_tcpip_adapter_set_mac((uint32_t)tcpip_if, &_mac);
     FUNC_EXIT;
@@ -706,7 +706,32 @@ esp_err_t tcpip_adapter_get_hostname(tcpip_adapter_if_t tcpip_if, const char **h
 {
     FUNC_ENTRY;
     FUNC_EXIT;
+    static char host[] = "Wio Terminal";
+    *hostname = host;
     return ESP_OK;
+}
+
+esp_err_t tcpip_adapter_dhcps_option(tcpip_adapter_option_mode_t opt_op, tcpip_adapter_option_id_t opt_id,
+                                     void *opt_val, uint32_t opt_len)
+
+{
+    FUNC_ENTRY;
+    FUNC_EXIT;
+    return ESP_OK;
+}
+
+esp_err_t tcpip_adapter_create_ip6_linklocal(tcpip_adapter_if_t tcpip_if)
+{
+    FUNC_ENTRY;
+    FUNC_EXIT;
+    return ESP_FAIL;
+}
+
+esp_err_t tcpip_adapter_get_ip6_linklocal(tcpip_adapter_if_t tcpip_if, ip6_addr_t *if_ip6)
+{
+    FUNC_ENTRY;
+    FUNC_EXIT;
+    return ESP_FAIL;
 }
 
 //@}
