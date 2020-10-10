@@ -236,7 +236,84 @@ typedef struct tcpip_adatper_ip_lost_timer_s {
     This will initialize TCPIP stack inside.
 */
 void tcpip_adapter_init(void);
+/**
+ * @brief  Start the ethernet interface with specific MAC and IP
+ *
+ * @param[in]  mac: set MAC address of this interface
+ * @param[in]  ip_info: set IP address of this interface
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
+ *         ESP_ERR_NO_MEM
+ */
+esp_err_t tcpip_adapter_eth_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info);
 
+/**
+ * @brief  Start the Wi-Fi station interface with specific MAC and IP
+ *
+ * Station interface will be initialized, connect WiFi stack with TCPIP stack.
+ *
+ * @param[in]  mac: set MAC address of this interface
+ * @param[in]  ip_info: set IP address of this interface
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
+ *         ESP_ERR_NO_MEM
+ */
+esp_err_t tcpip_adapter_sta_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info);
+
+/**
+ * @brief  Start the Wi-Fi AP interface with specific MAC and IP
+ *
+ * softAP interface will be initialized, connect WiFi stack with TCPIP stack.
+ *
+ * DHCP server will be started automatically.
+ *
+ * @param[in]  mac: set MAC address of this interface
+ * @param[in]  ip_info: set IP address of this interface
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
+ *         ESP_ERR_NO_MEM
+ */
+esp_err_t tcpip_adapter_ap_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info);
+
+/**
+ * @brief  Stop an interface
+ *
+ * The interface will be cleanup in this API, if DHCP server/client are started, will be stopped.
+ *
+ * @param[in]  tcpip_if: the interface which will be started
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
+ *         ESP_ERR_TCPIP_ADAPTER_IF_NOT_READY
+ */
+esp_err_t tcpip_adapter_stop(tcpip_adapter_if_t tcpip_if);
+
+/**
+ * @brief  Bring up an interface
+ *
+ * Only station interface need to be brought up, since station interface will be shut down when disconnect.
+ *
+ * @param[in]  tcpip_if: the interface which will be up
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_IF_NOT_READY
+ */
+esp_err_t tcpip_adapter_up(tcpip_adapter_if_t tcpip_if);
+
+/**
+ * @brief  Shut down an interface
+ *
+ * Only station interface need to be shut down, since station interface will be brought up when connect.
+ *
+ * @param[in]  tcpip_if: the interface which will be down
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_IF_NOT_READY
+ */
+esp_err_t tcpip_adapter_down(tcpip_adapter_if_t tcpip_if);
 /**
     @brief  Get interface's IP information
 

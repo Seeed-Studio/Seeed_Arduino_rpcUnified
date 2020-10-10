@@ -569,9 +569,12 @@ esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_i
     binary_t _ip_info;
     ret = (esp_err_t)rpc_tcpip_adapter_get_ip_info((uint32_t)tcpip_if, &_ip_info);
     if (ret == ESP_OK)
-    {
-        memcmp(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
+    {   
+        memcpy(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
     }
+    tcpip_adapter_ip_info_t * temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
+    // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, ip_info->ip, ip_info->netmask, ip_info->gw);
+    // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, temp->ip, temp->netmask, temp->gw);
     if (_ip_info.data != NULL)
     {
         erpc_free(_ip_info.data);
@@ -625,7 +628,7 @@ esp_err_t tcpip_adapter_get_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_
     ret = (esp_err_t)rpc_tcpip_adapter_get_dns_info((uint32_t)tcpip_if, (uint32_t)type, &_dns);
     if (ret == ESP_OK)
     {
-        memcmp(dns, _dns.data, sizeof(tcpip_adapter_dns_info_t));
+        memcpy(dns, _dns.data, sizeof(tcpip_adapter_dns_info_t));
     }
     if (_dns.data != NULL)
     {
@@ -648,7 +651,7 @@ esp_err_t tcpip_adapter_get_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
     ret = (esp_err_t)rpc_tcpip_adapter_get_mac((uint32_t)tcpip_if, &_mac);
     if (ret == ESP_OK)
     {
-        memcmp(mac, _mac.data, _mac.dataLength);
+        memcpy(mac, _mac.data, _mac.dataLength);
     }
     if (_mac.data != NULL)
     {
