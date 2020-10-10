@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "../erpc_shim/erpc_shim_unified.h"
+#include "./erpc_shim/erpc_shim_unified.h"
+#include "./esp_lib/esp_lib_unified.h"
 #include "rpc_wifi_api_hal.h"
 #include "erpc_port.h"
 
@@ -97,7 +98,7 @@ int wifi_set_mac_address(char *mac)
 {
     binary_t b_mac;
     b_mac.data = (uint8_t *)mac;
-    b_mac.dataLength = strlen(mac) + 1;
+    b_mac.dataLength = strlen((char *)mac) + 1;
     RPC_FUN_RETURN_1(wifi_set_mac_address, &b_mac, int);
 }
 
@@ -489,4 +490,223 @@ int wifi_set_tx_pause_data(unsigned int NewState)
 {
     RPC_FUN_RETURN_1(wifi_set_tx_pause_data, (uint32_t)NewState, int);
 }
+//@}
+
+//! @name rpc_wifi_tcpip
+//@{
+
+void tcpip_adapter_init(void)
+{
+    RPC_FUN_RETURN_VOID_0(tcpip_adapter_init);
+}
+
+esp_err_t tcpip_adapter_eth_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
+{
+    return ESP_OK;
+}
+
+esp_err_t tcpip_adapter_sta_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (mac == NULL || ip_info == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _mac;
+    binary_t _ip_info;
+    _mac.dataLength = strlen((char *)mac);
+    _mac.data = mac;
+    _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
+    _ip_info.data = (uint8_t *)ip_info;
+    ret = (esp_err_t)rpc_tcpip_adapter_sta_start(&_mac, &_ip_info);
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_ap_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (mac == NULL || ip_info == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _mac;
+    binary_t _ip_info;
+    _mac.dataLength = strlen((char *)mac);
+    _mac.data = mac;
+    _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
+    _ip_info.data = (uint8_t *)ip_info;
+    ret = (esp_err_t)rpc_tcpip_adapter_ap_start(&_mac, &_ip_info);
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_stop(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_stop, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_up(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_up, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_down(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_down, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_ip_info_t *ip_info)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (ip_info == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _ip_info;
+    ret = (esp_err_t)rpc_tcpip_adapter_get_ip_info((uint32_t)tcpip_if, &_ip_info);
+    if (ret == ESP_OK)
+    {
+        memcmp(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
+    }
+    if (_ip_info.data != NULL)
+    {
+        erpc_free(_ip_info.data);
+        _ip_info.data = NULL;
+    }
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_set_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_ip_info_t *ip_info)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (ip_info == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _ip_info;
+    _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
+    _ip_info.data = (uint8_t *)ip_info;
+    ret = (esp_err_t)rpc_tcpip_adapter_set_ip_info((uint32_t)tcpip_if, &_ip_info);
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_set_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_dns_type_t type, tcpip_adapter_dns_info_t *dns)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (dns == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _dns;
+    _dns.dataLength = sizeof(tcpip_adapter_dns_info_t);
+    _dns.data = (uint8_t *)dns;
+    ret = (esp_err_t)rpc_tcpip_adapter_set_dns_info((uint32_t)tcpip_if, (uint32_t)type, &_dns);
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_get_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_dns_type_t type, tcpip_adapter_dns_info_t *dns)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (dns == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _dns;
+    ret = (esp_err_t)rpc_tcpip_adapter_get_dns_info((uint32_t)tcpip_if, (uint32_t)type, &_dns);
+    if (ret == ESP_OK)
+    {
+        memcmp(dns, _dns.data, sizeof(tcpip_adapter_dns_info_t));
+    }
+    if (_dns.data != NULL)
+    {
+        erpc_free(_dns.data);
+        _dns.data = NULL;
+    }
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_get_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (mac == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _mac;
+    ret = (esp_err_t)rpc_tcpip_adapter_get_mac((uint32_t)tcpip_if, &_mac);
+    if (ret == ESP_OK)
+    {
+        memcmp(mac, _mac.data, _mac.dataLength);
+    }
+    if (_mac.data != NULL)
+    {
+        erpc_free(_mac.data);
+        _mac.data = NULL;
+    }
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_set_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
+{
+    FUNC_ENTRY;
+    esp_err_t ret = ESP_OK;
+    if (mac == NULL)
+    {
+        return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
+    }
+    binary_t _mac;
+    _mac.dataLength = strlen((char *)mac);
+    _mac.data = (uint8_t *)mac;
+    ret = (esp_err_t)rpc_tcpip_adapter_set_mac((uint32_t)tcpip_if, &_mac);
+    FUNC_EXIT;
+    return ret;
+}
+
+esp_err_t tcpip_adapter_dhcps_start(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_start, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_dhcps_stop(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_stop, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_dhcpc_start(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_start, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_dhcpc_stop(tcpip_adapter_if_t tcpip_if)
+{
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_stop, (uint32_t)tcpip_if, esp_err_t);
+}
+
+esp_err_t tcpip_adapter_set_hostname(tcpip_adapter_if_t tcpip_if, const char *hostname)
+{
+    FUNC_ENTRY;
+    FUNC_EXIT;
+    return ESP_OK;
+}
+
+esp_err_t tcpip_adapter_get_hostname(tcpip_adapter_if_t tcpip_if, const char **hostname)
+{
+    FUNC_ENTRY;
+    FUNC_EXIT;
+    return ESP_OK;
+}
+
 //@}
