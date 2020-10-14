@@ -1,4 +1,4 @@
-#define TAG "CALLBACK"
+#define TAG "BLE CALLBACK"
 #include "Arduino.h"
 #include "rtl_ble_unified.h"
 #include "../erpc_shim/erpc_shim_unified.h"

@@ -534,6 +534,10 @@ esp_err_t tcpip_adapter_get_netif(tcpip_adapter_if_t tcpip_if, void** netif);
 */
 bool tcpip_adapter_is_netif_up(tcpip_adapter_if_t tcpip_if);
 
+esp_err_t tcpip_adapter_get_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac);
+
+esp_err_t tcpip_adapter_set_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac);
+
 #ifdef __cplusplus
 }
 #endif

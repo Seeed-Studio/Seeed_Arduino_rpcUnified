@@ -85,6 +85,7 @@ extern void _real_body();
 void add_services(erpc::SimpleServer *server)
 {
     server->addService(static_cast<erpc::Service *>(create_rpc_ble_callback_service()));
+    server->addService(static_cast<erpc::Service *>(create_rpc_wifi_callback_service()));
 }
 
 void runClient(void *arg)

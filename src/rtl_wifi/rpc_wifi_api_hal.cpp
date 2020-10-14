@@ -10,6 +10,7 @@
 
 //! @name rpc_wifi_drv
 //@{
+    
 // int wifi_manager_init(void)
 // {
 //     RPC_FUN_RETURN_0(wifi_manager_init, int);
@@ -29,10 +30,10 @@ int wifi_connect(
     binary_t b_ssid;
     binary_t b_pasword;
 
-    b_ssid.dataLength = ssid_len;
+    b_ssid.dataLength = ssid_len + 1;
     b_ssid.data = (uint8_t *)ssid;
 
-    b_pasword.dataLength = password_len;
+    b_pasword.dataLength = password_len + 1;
     b_pasword.data = (uint8_t *)password;
 
     int ret = 0;
@@ -61,10 +62,10 @@ int wifi_connect_bssid(
     b_bssid.dataLength = ETH_ALEN;
     b_bssid.data = bssid;
 
-    b_ssid.dataLength = ssid_len;
+    b_ssid.dataLength = ssid_len + 1;
     b_ssid.data = (uint8_t *)ssid;
 
-    b_pasword.dataLength = password_len;
+    b_pasword.dataLength = password_len + 1;
     b_pasword.data = (uint8_t *)password;
 
     int ret = 0;
@@ -569,10 +570,10 @@ esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_i
     binary_t _ip_info;
     ret = (esp_err_t)rpc_tcpip_adapter_get_ip_info((uint32_t)tcpip_if, &_ip_info);
     if (ret == ESP_OK)
-    {   
+    {
         memcpy(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
     }
-    tcpip_adapter_ip_info_t * temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
+    tcpip_adapter_ip_info_t *temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
     // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, ip_info->ip, ip_info->netmask, ip_info->gw);
     // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, temp->ip, temp->netmask, temp->gw);
     if (_ip_info.data != NULL)
@@ -737,4 +738,15 @@ esp_err_t tcpip_adapter_get_ip6_linklocal(tcpip_adapter_if_t tcpip_if, ip6_addr_
     return ESP_FAIL;
 }
 
+//@}
+
+//! @name rpc_wifi_callback
+//@{
+extern system_event_cb_t ptr_wifi_event_callback;
+void system_event_callback_reg(system_event_cb_t system_event_cb)
+{
+    FUNC_ENTRY;
+    ptr_wifi_event_callback = system_event_cb;
+    FUNC_EXIT;
+}
 //@}
