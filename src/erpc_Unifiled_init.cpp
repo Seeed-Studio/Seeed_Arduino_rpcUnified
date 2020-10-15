@@ -22,8 +22,8 @@ class MyMessageBufferFactory : public MessageBufferFactory
 public:
     virtual MessageBuffer create()
     {
-        uint8_t *buf = new uint8_t[1024];
-        return MessageBuffer(buf, 1024);
+        uint8_t *buf = new uint8_t[4096];
+        return MessageBuffer(buf, 4096);
     }
 
     virtual void dispose(MessageBuffer *buf)

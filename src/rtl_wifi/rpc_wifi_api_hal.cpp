@@ -514,6 +514,81 @@ int wifi_get_reconnect_data(wlan_fast_reconnect_profile_t *wifi_info)
     return ret;
 }
 
+int32_t wifi_scan_start()
+{
+    RPC_FUN_RETURN_0(wifi_scan_start, int32_t);
+}
+
+bool wifi_is_scaning()
+{
+    RPC_FUN_RETURN_0(wifi_is_scaning, bool);
+}
+
+uint16_t wifi_scan_get_ap_num()
+{
+    RPC_FUN_RETURN_0(wifi_scan_get_ap_num, uint16_t);
+}
+
+int32_t wifi_scan_get_ap_records(uint16_t number, wifi_ap_record_t *_scanResult)
+{
+    FUNC_ENTRY;
+    int32_t ret = RTW_ERROR;
+    binary_t scanResult;
+    if (number > 50 || _scanResult == NULL)
+    {
+        return RTW_ERROR;
+    }
+    RPC_DEBUG("1");
+    ret = rpc_wifi_scan_get_ap_records(number, &scanResult);
+    RPC_DEBUG("2");
+    if (ret != RTW_SUCCESS)
+    {
+        return RTW_ERROR;
+    }
+    rtw_scan_result_t *_rtw_scanResult = (rtw_scan_result_t *)scanResult.data;
+    for (uint16_t i = 0; i < number; i++)
+    {
+        wifi_ap_record_t *item_network = &_scanResult[i];
+        rtw_scan_result_t *item_scanResult = &_rtw_scanResult[i];
+        memcpy(item_network->bssid, item_scanResult->BSSID.octet, 6);
+        memcpy(item_network->ssid, item_scanResult->SSID.val, sizeof(item_scanResult->SSID.val));
+        item_network->rssi = item_scanResult->signal_strength;
+        item_network->primary = item_scanResult->channel;
+
+        switch (item_scanResult->security)
+        {
+        case RTW_SECURITY_OPEN:
+            item_network->authmode = WIFI_AUTH_OPEN;
+            break;
+        case RTW_SECURITY_WEP_PSK:
+        case RTW_SECURITY_WEP_SHARED:
+            item_network->authmode = WIFI_AUTH_WEP;
+            break;
+        case RTW_SECURITY_WPA_TKIP_PSK:
+        case RTW_SECURITY_WPA_AES_PSK:
+            item_network->authmode = WIFI_AUTH_WPA_PSK;
+            break;
+        case RTW_SECURITY_WPA2_AES_PSK:
+        case RTW_SECURITY_WPA2_TKIP_PSK:
+        case RTW_SECURITY_WPA2_AES_CMAC:
+            item_network->authmode = WIFI_AUTH_WPA2_PSK;
+            break;
+        case RTW_SECURITY_WPA_WPA2_MIXED:
+            item_network->authmode = WIFI_AUTH_WPA_WPA2_PSK;
+            break;
+        default:
+            item_network->authmode = WIFI_AUTH_MAX;
+            break;
+        }
+        item_network->wps = item_scanResult->wps_type == RTW_WPS_TYPE_NONE ? 0 : 1;
+    }
+    if (scanResult.data)
+    {
+        erpc_free(scanResult.data);
+    }
+    FUNC_EXIT_RC(ret);
+}
+
 //@}
 
 //! @name rpc_wifi_tcpip
