@@ -10,7 +10,7 @@
 
 //! @name rpc_wifi_drv
 //@{
-    
+
 // int wifi_manager_init(void)
 // {
 //     RPC_FUN_RETURN_0(wifi_manager_init, int);
@@ -491,6 +491,29 @@ int wifi_set_tx_pause_data(unsigned int NewState)
 {
     RPC_FUN_RETURN_1(wifi_set_tx_pause_data, (uint32_t)NewState, int);
 }
+
+int wifi_get_reconnect_data(wlan_fast_reconnect_profile_t *wifi_info)
+{
+    FUNC_ENTRY;
+    if (wifi_info == NULL)
+    {
+        RPC_DEBUG("wifi_info null");
+        FUNC_EXIT;
+        return 0;
+    }
+
+    binary_t data;
+    int ret = rpc_wifi_get_reconnect_data(&data);
+    RPC_DEBUG("rpc_wifi_get_reconnect_data ret %d", ret);
+    memcpy(wifi_info, data.data, sizeof(wlan_fast_reconnect_profile_t));
+    if (data.data)
+    {
+        erpc_free(data.data);
+    }
+    FUNC_EXIT;
+    return ret;
+}
+
 //@}
 
 //! @name rpc_wifi_tcpip

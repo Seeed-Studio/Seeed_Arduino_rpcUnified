@@ -138,4 +138,11 @@ void setup()
 
 void loop()
 {
+    delay(5000);
+    static wlan_fast_reconnect_profile_t wifi_info = {0};
+	if(wifi_get_reconnect_data(&wifi_info)!=0)
+	{
+		Serial.printf("SSID: %s\n\r", wifi_info.psk_essid);
+		Serial.printf("PASSWORD: %s\n\r", wifi_info.psk_passphrase);
+	}
 }
