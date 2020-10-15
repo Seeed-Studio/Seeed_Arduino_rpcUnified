@@ -354,7 +354,7 @@ int wifi_set_pscan_chan(__u8 *channel_list, __u8 *pscan_config, __u8 length)
     FUNC_ENTRY;
     binary_t b_channel_list;
     b_channel_list.data = (uint8_t *)channel_list;
-    b_channel_list.dataLength = length;
+    b_channel_list.dataLength = length * sizeof(uint32_t);
     int ret = 0;
     ret = rpc_wifi_set_pscan_chan(&b_channel_list, (uint8_t)*pscan_config);
     FUNC_EXIT;
