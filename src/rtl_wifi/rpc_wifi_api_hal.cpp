@@ -69,7 +69,7 @@ int wifi_connect_bssid(
     b_pasword.data = (uint8_t *)password;
 
     int ret = 0;
-    ret = rpc_wifi_connect_bssid(&b_ssid, &b_ssid, &b_pasword, security_type, key_id, NULL);
+    ret = rpc_wifi_connect_bssid(&b_bssid, &b_ssid, &b_pasword, security_type, key_id, NULL);
 
     FUNC_EXIT
     return ret;

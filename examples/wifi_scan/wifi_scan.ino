@@ -121,8 +121,11 @@ void setup()
     {
         Serial.printf("\n\rERROR: Wifi on STA failed!");
     }
+}
 
-    wifi_scan_start();
+void loop()
+{
+     wifi_scan_start();
     while (wifi_is_scaning())
     {
         Serial.printf("*");
@@ -140,10 +143,6 @@ void setup()
     {
         print_scan_result(&networks[i]);
     }
-}
 
-void loop()
-{
-    delay(2000);
-    Serial.printf(".");
+    delay(5000);
 }
