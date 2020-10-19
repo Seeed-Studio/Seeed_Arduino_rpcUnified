@@ -3,10 +3,10 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "./erpc_shim/erpc_shim_unified.h"
-#include "./esp_lib/esp_lib_unified.h"
+#include "erpc/erpc_shim_unified.h"
+#include "erpc/erpc_port.h"
+#include "esp/esp_lib_unified.h"
 #include "rpc_wifi_api_hal.h"
-#include "erpc_port.h"
 
 //! @name rpc_wifi_drv
 //@{

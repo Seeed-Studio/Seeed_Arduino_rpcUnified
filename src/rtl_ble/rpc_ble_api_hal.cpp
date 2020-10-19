@@ -2,14 +2,14 @@
 #define TAG "BLE API"
 #include <stdlib.h>
 #include <string.h>
-#include "../erpc_shim/erpc_shim_unified.h"
+#include "erpc/erpc_shim_unified.h"
+#include "erpc/erpc_port.h"
 #include "rpc_ble_api_utils.h"
 #include "rpc_ble_api_hal.h"
 #include "gap_adv.h"
 #include "ble_common.h"
 #include "profile_client.h"
 #include "profile_server.h"
-#include "erpc_port.h"
 #include "ble_server.h"
 #include "ble_client.h"
 

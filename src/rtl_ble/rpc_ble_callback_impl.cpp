@@ -1,9 +1,10 @@
 #define TAG "BLE CALLBACK"
 #include "Arduino.h"
 #include "rtl_ble_unified.h"
-#include "../erpc_shim/erpc_shim_unified.h"
+#include "erpc/erpc_shim_unified.h"
+#include "erpc/erpc_port.h"
 #include "rpc_unified_log.h"
-#include "erpc_port.h"
+
 
 P_FUN_LE_APP_CB _ble_gap_callback = NULL;
 P_FUN_HABDLE_GAP_MSG _handle_gap_msg = NULL;

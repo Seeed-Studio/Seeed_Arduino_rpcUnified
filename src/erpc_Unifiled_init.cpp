@@ -5,15 +5,15 @@
 */
 
 
-#include "erpc_arduino_uart_transport.h"
-#include "erpc_basic_codec.h"
-#include "erpc_arbitrated_client_manager.h"
-#include "erpc_threading.h"
-#include "erpc_simple_server.h"
-#include "erpc_transport_arbitrator.h"
-#include "erpc_port.h"
+#include "erpc/erpc_arduino_uart_transport.h"
+#include "erpc/erpc_basic_codec.h"
+#include "erpc/erpc_arbitrated_client_manager.h"
+#include "erpc/erpc_threading.h"
+#include "erpc/erpc_simple_server.h"
+#include "erpc/erpc_transport_arbitrator.h"
+#include "erpc/erpc_port.h"
 #include "rtl_ble/rtl_ble_unified.h"
-#include "erpc_shim/erpc_shim_unified.h"
+#include "erpc/erpc_shim_unified.h"
 
 using namespace erpc;
 

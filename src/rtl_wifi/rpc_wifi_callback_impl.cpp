@@ -1,10 +1,11 @@
 #define TAG "WIFI CALLBACK"
 #include "Arduino.h"
 #include "rtl_wifi_unified.h"
-#include "../erpc_shim/erpc_shim_unified.h"
-#include "./esp_lib/esp_lib_unified.h"
+#include "erpc/erpc_shim_unified.h"
+#include "erpc/erpc_port.h"
+#include "esp/esp_lib_unified.h"
 #include "rpc_unified_log.h"
-#include "erpc_port.h"
+
 system_event_cb_t ptr_wifi_event_callback = NULL;
 
 void rpc_wifi_event_callback(const binary_t *event)

@@ -3,10 +3,11 @@
 
 #include "Arduino.h"
 #include "rtl_wifi_unified.h"
-#include "./erpc_shim/erpc_shim_unified.h"
-#include "./esp_lib/esp_lib_unified.h"
+#include "erpc/erpc_shim_unified.h"
+#include "erpc/erpc_port.h"
+#include "esp/esp_lib_unified.h"
 #include "rpc_unified_log.h"
-#include "erpc_port.h"
+
 
 #define IW_PASSPHRASE_MAX_SIZE 64
 #define NDIS_802_11_LENGTH_SSID 32
