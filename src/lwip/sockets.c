@@ -12,6 +12,12 @@
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
 
+int lwip_errno()
+{
+    int so_error = rpc_lwip_errno();
+    return so_error;
+}
+
 int lwip_accept(int s, struct sockaddr *addr, socklen_t *addrlen)
 {
     FUNC_ENTRY;
@@ -56,7 +62,7 @@ int lwip_getsockopt(int s, int level, int optname, void *optval, socklen_t *optl
     binary_t b_in_optval, b_out_optval;
     b_in_optval.data = (uint8_t *)optval;
     b_in_optval.dataLength = *optlen;
-    int ret = rpc_lwip_getsockopt(s, level, &b_in_optval, optname, &b_out_optval, optlen);
+    int ret = rpc_lwip_getsockopt(s, level, optname, &b_in_optval, &b_out_optval, optlen);
     memcpy(optval, b_out_optval.data, b_out_optval.dataLength);
     if (b_out_optval.data != NULL)
     {
@@ -136,8 +142,13 @@ int lwip_send(int s, const void *dataptr, size_t size, int flags)
     binary_t b_data;
     b_data.data = (uint8_t *)dataptr;
     b_data.dataLength = (uint32_t)size;
-    int ret = rpc_lwip_send(s, &b_data, flags);
-    FUNC_EXIT_RC(ret);
+    for(int i = 0; i < size; i++)
+    {
+        rpc_printf("%c ", b_data.data[i]);
+    }
+    rpc_printf("\n\r");
+    //int ret = rpc_lwip_send(s, &b_data, flags);
+    FUNC_EXIT_RC(0);
 }
 int lwip_sendmsg(int s, const struct msghdr *message, int flags)
 {
@@ -193,21 +204,51 @@ int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptse
                 struct timeval *timeout)
 {
     FUNC_ENTRY;
-    binary_t b_readset;
-    b_readset.data = (uint8_t *)readset;
-    b_readset.dataLength = sizeof(fd_set);
-    binary_t b_writeset;
-    b_writeset.data = (uint8_t *)writeset;
-    b_writeset.dataLength = sizeof(fd_set);
-    binary_t b_exceptset;
-    b_exceptset.data = (uint8_t *)exceptset;
-    b_exceptset.dataLength = sizeof(fd_set);
-    binary_t b_timeout;
-    b_timeout.data = (uint8_t *)timeout;
-    b_timeout.dataLength = sizeof(struct timeval);
-
-    int ret = rpc_lwip_select(maxfdp1, &b_readset, &writeset, &exceptset, &b_timeout);
-
+    binary_t *b_readset = NULL;
+    if (readset != NULL)
+    {
+        b_readset = (binary_t *)erpc_malloc(sizeof(binary_t));
+        b_readset->data = (uint8_t *)readset;
+        b_readset->dataLength = sizeof(fd_set);
+    }
+    binary_t *b_writeset = NULL;
+    if (writeset != NULL)
+    {
+        b_writeset = (binary_t *)erpc_malloc(sizeof(binary_t));
+        b_writeset->data = (uint8_t *)writeset;
+        b_writeset->dataLength = sizeof(fd_set);
+    }
+    binary_t *b_exceptset = NULL;
+    if (exceptset != NULL)
+    {
+        b_exceptset = (binary_t *)erpc_malloc(sizeof(binary_t));
+        b_exceptset->data = (uint8_t *)exceptset;
+        b_exceptset->dataLength = sizeof(fd_set);
+    }
+    binary_t *b_timeout = NULL;
+    if (timeout != NULL)
+    {
+        b_timeout = (binary_t *)erpc_malloc(sizeof(binary_t));
+        b_timeout->data = (uint8_t *)timeout;
+        b_timeout->dataLength = sizeof(struct timeval);
+    }
+    int ret = rpc_lwip_select(maxfdp1, b_readset, b_writeset, b_exceptset, b_timeout);
+    if (b_readset != NULL)
+    {
+        erpc_free(b_readset);
+    }
+    if (b_writeset != NULL)
+    {
+        erpc_free(b_writeset);
+    }
+    if (b_exceptset != NULL)
+    {
+        erpc_free(b_exceptset);
+    }
+    if (b_timeout != NULL)
+    {
+        erpc_free(b_timeout);
+    }
     FUNC_EXIT_RC(ret);
 }
 int lwip_ioctl(int s, long cmd, void *argp)
@@ -224,20 +265,23 @@ int lwip_fcntl(int s, int cmd, int val)
     RPC_FUN_RETURN_3(lwip_fcntl, s, cmd, val, int);
 }
 
-u16_t atu_htons(u16_t x) {
-	u16_t y = ((x << 8) | (x >> 8));
-	return y;
+u16_t atu_htons(u16_t x)
+{
+    u16_t y = ((x << 8) | (x >> 8));
+    return y;
 }
 
-u32_t atu_htonl(u32_t x) {
-	union {
-		u32_t y;
-		char c[4];
-	} u;
+u32_t atu_htonl(u32_t x)
+{
+    union
+    {
+        u32_t y;
+        char c[4];
+    } u;
 
-	u.c[0] = ((char*)&x)[3];
-	u.c[1] = ((char*)&x)[2];
-	u.c[2] = ((char*)&x)[1];
-	u.c[3] = ((char*)&x)[0];
-	return u.y;
+    u.c[0] = ((char *)&x)[3];
+    u.c[1] = ((char *)&x)[2];
+    u.c[2] = ((char *)&x)[1];
+    u.c[3] = ((char *)&x)[0];
+    return u.y;
 }
