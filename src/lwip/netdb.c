@@ -12,6 +12,34 @@
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
 
+#include <string.h> /* memset */
+#include <stdlib.h> /* atoi */
+
+/** helper struct for gethostbyname_r to access the char* buffer */
+struct gethostbyname_r_helper {
+  ip_addr_t *addr_list[2];
+  ip_addr_t addr;
+  char *aliases;
+};
+
+/** h_errno is exported in netdb.h for access by applications. */
+#if LWIP_DNS_API_DECLARE_H_ERRNO
+int h_errno;
+#endif /* LWIP_DNS_API_DECLARE_H_ERRNO */
+
+/** define "hostent" variables storage: 0 if we use a static (but unprotected)
+ * set of variables for lwip_gethostbyname, 1 if we use a local storage */
+#ifndef LWIP_DNS_API_HOSTENT_STORAGE
+#define LWIP_DNS_API_HOSTENT_STORAGE 0
+#endif
+
+/** define "hostent" variables storage */
+#if LWIP_DNS_API_HOSTENT_STORAGE
+#define HOSTENT_STORAGE
+#else
+#define HOSTENT_STORAGE static
+#endif /* LWIP_DNS_API_STATIC_HOSTENT */
+
 err_t netconn_gethostbyname(const char * name, ip_addr_t * addr)
 {
     FUNC_ENTRY;
@@ -27,7 +55,6 @@ err_t netconn_gethostbyname(const char * name, ip_addr_t * addr)
     }
     return ret;
 }
-
 /**
  * Returns an entry containing addresses of address family AF_INET
  * for the host with name name.
@@ -37,18 +64,17 @@ err_t netconn_gethostbyname(const char * name, ip_addr_t * addr)
  * @return an entry containing addresses of address family AF_INET
  *         for the host with name name
  */
-struct hostent*
-lwip_gethostbyname(const char *name)
+struct hostent *lwip_gethostbyname(const char *name)
 {
   err_t err;
   ip_addr_t addr;
 
   /* buffer variables for lwip_gethostbyname() */
-  static struct hostent s_hostent;
-  static char *s_aliases;
-  static ip_addr_t s_hostent_addr;
-  static ip_addr_t *s_phostent_addr[2];
-  static char s_hostname[DNS_MAX_NAME_LENGTH + 1];
+  HOSTENT_STORAGE struct hostent s_hostent;
+  HOSTENT_STORAGE char *s_aliases;
+  HOSTENT_STORAGE ip_addr_t s_hostent_addr;
+  HOSTENT_STORAGE ip_addr_t *s_phostent_addr[2];
+  HOSTENT_STORAGE char s_hostname[DNS_MAX_NAME_LENGTH + 1];
 
   /* query host IP address */
   err = netconn_gethostbyname(name, &addr);

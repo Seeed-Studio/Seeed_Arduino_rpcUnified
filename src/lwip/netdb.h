@@ -34,6 +34,9 @@
 #include <stddef.h> /* for size_t */
 
 #include "sockets.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* some rarely used options */
 #ifndef LWIP_DNS_API_DECLARE_H_ERRNO
@@ -107,5 +110,9 @@ int lwip_getaddrinfo(const char *nodename,
 #define getaddrinfo(nodname, servname, hints, res) \
        lwip_getaddrinfo(nodname, servname, hints, res)
 #endif /* LWIP_COMPAT_SOCKETS */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LWIP_DNS && LWIP_SOCKET */
