@@ -96,6 +96,12 @@ int lwip_listen(int s, int backlog)
 {
     RPC_FUN_RETURN_2(lwip_listen, s, backlog, int);
 }
+
+int lwip_available(int s)
+{
+    RPC_FUN_RETURN_1(lwip_available, s, int);
+}
+
 int lwip_recv(int s, void *mem, size_t len, int flags)
 {
     FUNC_ENTRY;

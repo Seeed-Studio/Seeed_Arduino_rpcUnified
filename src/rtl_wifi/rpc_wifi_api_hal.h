@@ -31,4 +31,5 @@ uint16_t wifi_scan_get_ap_num();
 int32_t wifi_scan_get_ap_records(uint16_t number, wifi_ap_record_t *_scanResult);
 int32_t wifi_scan_start();
 
+
 #endif /* _rpc_wifi_api__hal_h_ */
