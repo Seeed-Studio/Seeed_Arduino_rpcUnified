@@ -34,38 +34,35 @@ public:
         }
     }
 };
+// #define ble_uart Serial1
+#define PIN_BLE_SERIAL_X_RX (84ul)
+#define PIN_BLE_SERIAL_X_TX (85ul)
+#define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
+#define PAD_BLE_SERIAL_X_TX (UART_TX_PAD_0)
+#define SERCOM_BLE_SERIAL_X sercom0
+#define INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(uart) \
+ void SERCOM0_0_Handler() \
+ { \
+  (uart).IrqHandler(); \
+ } \
+ void SERCOM0_1_Handler() \
+ { \
+  (uart).IrqHandler(); \
+ } \
+ void SERCOM0_2_Handler() \
+ { \
+  (uart).IrqHandler(); \
+ } \
+ void SERCOM0_3_Handler() \
+ { \
+  (uart).IrqHandler(); \
+ }
 
-// Uart ble_uart(&SERCOM_GPIO_SERIAL_X, PIN_GPIO_SERIAL_X_RX, PIN_GPIO_SERIAL_X_TX, PAD_GPIO_SERIAL_X_RX, PAD_GPIO_SERIAL_X_TX);
-// INTERRUPT_HANDLER_IMPLEMENT_GPIO_SERIAL_X(ble_uart)
-#define ble_uart Serial1
-// #define PIN_BLE_SERIAL_X_RX (84ul)
-// #define PIN_BLE_SERIAL_X_TX (85ul)
-// #define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
-// #define PAD_BLE_SERIAL_X_TX (UART_TX_PAD_0)
-// #define SERCOM_BLE_SERIAL_X sercom0
-// #define INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(uart) \
-//  void SERCOM0_0_Handler() \
-//  { \
-//   (uart).IrqHandler(); \
-//  } \
-//  void SERCOM0_1_Handler() \
-//  { \
-//   (uart).IrqHandler(); \
-//  } \
-//  void SERCOM0_2_Handler() \
-//  { \
-//   (uart).IrqHandler(); \
-//  } \
-//  void SERCOM0_3_Handler() \
-//  { \
-//   (uart).IrqHandler(); \
-//  }
-
-// Uart ble_uart(&SERCOM_BLE_SERIAL_X, PIN_BLE_SERIAL_X_RX, PIN_BLE_SERIAL_X_TX, PAD_BLE_SERIAL_X_RX, PAD_BLE_SERIAL_X_TX);
-// extern "C"
-// {
-// INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
-// }
+EUart ble_uart(&SERCOM_BLE_SERIAL_X, PIN_BLE_SERIAL_X_RX, PIN_BLE_SERIAL_X_TX, PAD_BLE_SERIAL_X_RX, PAD_BLE_SERIAL_X_TX);
+extern "C"
+{
+INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
+}
 
 UartTransport g_transport(&ble_uart, 1843200);
 MyMessageBufferFactory g_msgFactory;
@@ -90,12 +87,12 @@ void add_services(erpc::SimpleServer *server)
 
 void runClient(void *arg)
 {
+    delay(100);
    _real_body();
 }
 
 void runServer(void *arg)
 {
-    Serial.println("start erpc server");
     /* run server */
     while (true)
     {
@@ -105,11 +102,10 @@ void runServer(void *arg)
 }
 
 Thread serverThread(&runServer, configMAX_PRIORITIES,    4096, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 10240, "runClient");
+Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 20480, "runClient");
 
 void erpc_init()
 {
-    Serial.printf("erpc init\n\r");
     pinMode(RTL8720D_CHIP_PU, OUTPUT);
     digitalWrite(RTL8720D_CHIP_PU, LOW);
     delay(100);
@@ -142,7 +138,6 @@ void erpc_init()
 void _wrap_body()
 {
     Serial.begin(115200);
-
     erpc_init();
     
     vTaskStartScheduler();
