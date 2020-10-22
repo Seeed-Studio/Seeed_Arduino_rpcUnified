@@ -67,7 +67,7 @@ public:
 // INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
 // }
 
-UartTransport g_transport(&ble_uart, 115200);
+UartTransport g_transport(&ble_uart, 1843200);
 MyMessageBufferFactory g_msgFactory;
 BasicCodecFactory g_basicCodecFactory;
 ArbitratedClientManager *g_client;
