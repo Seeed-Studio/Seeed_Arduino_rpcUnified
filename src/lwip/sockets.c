@@ -100,8 +100,11 @@ int lwip_recv(int s, void *mem, size_t len, int flags)
 {
     FUNC_ENTRY;
     binary_t b_mem;
-    int ret = rpc_lwip_recv(s, &b_mem, len, flags);
-    memcpy(mem, b_mem.data, len);
+    int ret = rpc_lwip_recv(s, &b_mem, len, flags, len*10);
+    if (ret > 0)
+    {
+        memcpy(mem, b_mem.data, b_mem.dataLength);
+    }
     if (b_mem.data != NULL)
     {
         erpc_free(b_mem.data);
@@ -112,8 +115,11 @@ int lwip_read(int s, void *mem, size_t len)
 {
     FUNC_ENTRY;
     binary_t b_mem;
-    int ret = rpc_lwip_read(s, &b_mem, len);
-    memcpy(mem, b_mem.data, len);
+    int ret = rpc_lwip_read(s, &b_mem, len, len * 10);
+    if (ret > 0)
+    {
+        memcpy(mem, b_mem.data, b_mem.dataLength);
+    }
     if (b_mem.data != NULL)
     {
         erpc_free(b_mem.data);
@@ -128,8 +134,11 @@ int lwip_recvfrom(int s, void *mem, size_t len, int flags,
     binary_t b_from;
     b_from.data = (uint8_t *)from;
     b_from.dataLength = sizeof(struct sockaddr);
-    int ret = rpc_lwip_recvfrom(s, &b_mem, len, flags, &b_from, fromlen);
-    memcpy(mem, b_mem.data, len);
+    int ret = rpc_lwip_recvfrom(s, &b_mem, len, flags, &b_from, fromlen, len * 10);
+    if (ret > 0)
+    {
+        memcpy(mem, b_mem.data, b_mem.dataLength);
+    }
     if (b_mem.data != NULL)
     {
         erpc_free(b_mem.data);
@@ -142,13 +151,15 @@ int lwip_send(int s, const void *dataptr, size_t size, int flags)
     binary_t b_data;
     b_data.data = (uint8_t *)dataptr;
     b_data.dataLength = (uint32_t)size;
-    for(int i = 0; i < size; i++)
+#ifdef ENABLE_RPC_DEBUG
+    for (int i = 0; i < size; i++)
     {
         rpc_printf("%c ", b_data.data[i]);
     }
     rpc_printf("\n\r");
-    //int ret = rpc_lwip_send(s, &b_data, flags);
-    FUNC_EXIT_RC(0);
+#endif
+    int ret = rpc_lwip_send(s, &b_data, flags);
+    FUNC_EXIT_RC(ret);
 }
 int lwip_sendmsg(int s, const struct msghdr *message, int flags)
 {
@@ -254,10 +265,17 @@ int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptse
 int lwip_ioctl(int s, long cmd, void *argp)
 {
     FUNC_ENTRY;
-    binary_t b_argp;
-    b_argp.data = (uint8_t *)argp;
-    b_argp.dataLength = 4;
-    int ret = rpc_lwip_ioctl(s, cmd, &b_argp);
+    binary_t b_in_argp;
+    binary_t b_out_argp;
+    b_in_argp.data = (uint8_t *)argp;
+    b_in_argp.dataLength = 4;
+
+    int ret = rpc_lwip_ioctl(s, cmd, &b_in_argp, &b_out_argp);
+    memcpy(argp, b_out_argp.data, b_in_argp.dataLength);
+    if (b_out_argp.data != NULL)
+    {
+        erpc_free(b_out_argp.data);
+    }
     FUNC_EXIT_RC(ret);
 }
 int lwip_fcntl(int s, int cmd, int val)

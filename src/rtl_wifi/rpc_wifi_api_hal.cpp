@@ -534,17 +534,18 @@ int32_t wifi_scan_get_ap_records(uint16_t number, wifi_ap_record_t *_scanResult)
     FUNC_ENTRY;
     int32_t ret = RTW_ERROR;
     binary_t scanResult;
-    if (number > 50 || _scanResult == NULL)
+    if (number > 60 || _scanResult == NULL)
     {
         return RTW_ERROR;
     }
     RPC_DEBUG("1");
     ret = rpc_wifi_scan_get_ap_records(number, &scanResult);
-    RPC_DEBUG("2");
     if (ret != RTW_SUCCESS)
     {
+        RPC_DEBUG("3");
         return RTW_ERROR;
     }
+    RPC_DEBUG("2");
     rtw_scan_result_t *_rtw_scanResult = (rtw_scan_result_t *)scanResult.data;
     for (uint16_t i = 0; i < number; i++)
     {

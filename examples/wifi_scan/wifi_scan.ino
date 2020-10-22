@@ -96,12 +96,7 @@ static void print_scan_result(wifi_ap_record_t *record)
     Serial.printf(" %d\t ", record->rssi);
     Serial.printf(" %d\t  ", record->primary);
     Serial.printf(" %d\t  ", record->wps);
-    Serial.printf("%s\t\t ", (record->authmode == WIFI_AUTH_OPEN) ? 
-                              "Open" : (record->authmode == WIFI_AUTH_WEP) ? 
-                              "WEP" : (record->authmode == WIFI_AUTH_WPA_PSK) ? 
-                              "WPA PSK" : (record->authmode == WIFI_AUTH_WPA2_PSK) ? 
-                              "WPA2 PSK": (record->authmode == WIFI_AUTH_WPA_WPA2_PSK) ? 
-                              "WPA/WPA2 AES":"Unknown");
+    Serial.printf("%s\t\t ", (record->authmode == WIFI_AUTH_OPEN) ? "Open" : (record->authmode == WIFI_AUTH_WEP) ? "WEP" : (record->authmode == WIFI_AUTH_WPA_PSK) ? "WPA PSK" : (record->authmode == WIFI_AUTH_WPA2_PSK) ? "WPA2 PSK" : (record->authmode == WIFI_AUTH_WPA_WPA2_PSK) ? "WPA/WPA2 AES" : "Unknown");
     Serial.printf(" %s ", record->ssid);
     Serial.printf("\r\n");
 }
@@ -125,18 +120,22 @@ void setup()
 
 void loop()
 {
-     wifi_scan_start();
+    wifi_scan_start();
     while (wifi_is_scaning())
     {
         Serial.printf("*");
         delay(200);
     }
     uint16_t networkNum = wifi_scan_get_ap_num();
-    static wifi_ap_record_t networks[50];
+    static wifi_ap_record_t networks[60];
     Serial.printf("networkNum:%d\n\r", networkNum);
     if (networkNum != 0)
     {
-        wifi_scan_get_ap_records(networkNum, networks);
+        int32_t ret = wifi_scan_get_ap_records(60, networks);
+        if (ret != RTW_SUCCESS)
+        {
+            Serial.printf("error :%d\n\r", ret);
+        }
     }
 
     for (int i = 0; i < networkNum; i++)
