@@ -17,7 +17,10 @@ void rpc_wifi_dns_found(const char *hostname, const binary_t *ipaddr, const bina
 
     memcpy(&ptr_found, arg->data, 4);
     memcpy(&ptr_args, arg->data + 4, 4);
-    ptr_found(hostname, (ip_addr_t *)ipaddr->data, (void *)ptr_args);
+    if (ptr_found != NULL)
+    {
+        ptr_found(hostname, (ip_addr_t *)ipaddr->data, (void *)ptr_args);
+    }
     FUNC_EXIT;
 }
 
