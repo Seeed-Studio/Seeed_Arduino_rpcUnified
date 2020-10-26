@@ -27,14 +27,17 @@ static void free_binary_t_struct(binary_t *data)
 
 void ble_init()
 {
-    FUNC_ENTRY("ble_init called");
-    rpc_ble_init();
+   RPC_FUN_RETURN_VOID_0(ble_init);
+}
+
+void ble_deinit(void)
+{
+    RPC_FUN_RETURN_VOID_0(ble_deinit);
 }
 
 void ble_start()
 {
-    FUNC_ENTRY("ble_start called");
-    rpc_ble_start();
+    RPC_FUN_RETURN_VOID_0(ble_start);
 }
 //! @name rpc_gap
 //@{

@@ -22,6 +22,7 @@ typedef void (*P_FUN_HABDLE_GAP_MSG)(T_IO_MSG *p_gap_msg);
 
 void ble_start(void);
 void ble_init(void);
+void ble_deinit(void);
 void le_register_app_cb(P_FUN_LE_APP_CB gap_callback);
 void le_register_msg_handler(P_FUN_HABDLE_GAP_MSG handle_gap_msg);
 void le_register_gattc_cb(P_FUN_GENERAL_APP_CB ble_gattc_callback);
