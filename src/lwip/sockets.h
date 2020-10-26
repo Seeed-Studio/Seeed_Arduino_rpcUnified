@@ -46,7 +46,6 @@
 #include "lwip/ip_addr.h"
 #include "lwip/err.h"
 #include "lwip/inet.h"
-#include "lwip/errno.h"
 
 #ifdef __cplusplus
 extern "C" {

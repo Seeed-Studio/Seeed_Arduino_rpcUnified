@@ -7,7 +7,6 @@
 #include "rpc_wifi_lwip_utils.h"
 
 #include <stdbool.h>
-#include <errno.h>
 #include "sockets.h"
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
