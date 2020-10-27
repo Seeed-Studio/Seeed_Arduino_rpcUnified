@@ -12,7 +12,6 @@
 #include "erpc/erpc_simple_server.h"
 #include "erpc/erpc_transport_arbitrator.h"
 #include "erpc/erpc_port.h"
-#include "rtl_ble/rtl_ble_unified.h"
 #include "erpc/erpc_shim_unified.h"
 
 using namespace erpc;

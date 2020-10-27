@@ -2,7 +2,7 @@
 #define _rpc_wifi_api__hal_h_
 
 #include "Arduino.h"
-#include "rtl_wifi_unified.h"
+#include "wifi_unified.h"
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
 #include "esp/esp_lib_unified.h"

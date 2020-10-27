@@ -1,6 +1,6 @@
 #define TAG "BLE CALLBACK"
 #include "Arduino.h"
-#include "rtl_ble_unified.h"
+#include "ble_unified.h"
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
 #include "rpc_unified_log.h"
