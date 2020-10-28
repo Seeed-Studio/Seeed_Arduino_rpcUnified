@@ -1,6 +1,5 @@
-
-
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_wifi/wifi_unified.h"
 
 const char *ssid = "TE_TEST";
 const char *password = "123456789";

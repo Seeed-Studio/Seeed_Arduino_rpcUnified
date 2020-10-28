@@ -1,4 +1,5 @@
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_ble/ble_unified.h"
 
 extern void ble_handle_gap_msg(T_IO_MSG *p_gap_msg);
 extern T_APP_RESULT ble_gatt_server_callback(T_SERVER_ID service_id, void *p_para);

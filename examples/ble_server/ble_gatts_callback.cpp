@@ -1,5 +1,6 @@
 #include "Arduino.h"
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_ble/ble_unified.h"
 uint32_t value = 50;
 extern bool isNotify; 
 T_APP_RESULT onRead(uint8_t conn_id, T_SERVER_ID service_id, uint16_t attrib_index, uint16_t offset, uint16_t *p_length, uint8_t **pp_value)

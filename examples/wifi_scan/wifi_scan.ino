@@ -1,4 +1,6 @@
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_wifi/wifi_unified.h"
+
 esp_err_t wifi_event_callback(void *ctx, system_event_t *event)
 {
     Serial.printf("[WiFi-event] event: %d\n\r", event->event_id);

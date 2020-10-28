@@ -1,5 +1,6 @@
 #include "Arduino.h"
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_ble/ble_unified.h"
 T_APP_RESULT ble_gatt_client_callback(T_CLIENT_ID client_id, uint8_t conn_id, void *p_data)
 {
     T_APP_RESULT result = APP_RESULT_SUCCESS;

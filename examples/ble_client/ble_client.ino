@@ -1,4 +1,5 @@
-#include "Seeed_erpcUnified.h"
+#include "seeed_rpcUnified.h"
+#include "rtl_ble/ble_unified.h"
 
 T_APP_RESULT ble_gap_callback(uint8_t cb_type, void *p_cb_data)
 {
