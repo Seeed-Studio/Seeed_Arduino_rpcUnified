@@ -97,7 +97,7 @@
     do                             \
     {                              \
         FUNC_ENTRY;                \
-        (void)rpc_##FUN();   \
+        (void)rpc_##FUN();         \
         FUNC_EXIT;                 \
         return;                    \
     } while (0)
@@ -106,7 +106,7 @@
     do                                     \
     {                                      \
         FUNC_ENTRY;                        \
-        (void)rpc_##FUN(PARAM0);     \
+        (void)rpc_##FUN(PARAM0);           \
         FUNC_EXIT;                         \
         return;                            \
     } while (0)
@@ -115,7 +115,7 @@
     do                                             \
     {                                              \
         FUNC_ENTRY;                                \
-        (void)rpc_##FUN(PARAM0, PARAM1);     \
+        (void)rpc_##FUN(PARAM0, PARAM1);           \
         FUNC_EXIT;                                 \
         return;                                    \
     } while (0)
@@ -124,7 +124,7 @@
     do                                                     \
     {                                                      \
         FUNC_ENTRY;                                        \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2);           \
         FUNC_EXIT;                                         \
         return;                                            \
     } while (0)
@@ -133,7 +133,7 @@
     do                                                             \
     {                                                              \
         FUNC_ENTRY;                                                \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3);           \
         FUNC_EXIT;                                                 \
         return;                                                    \
     } while (0)
@@ -142,7 +142,7 @@
     do                                                                     \
     {                                                                      \
         FUNC_ENTRY;                                                        \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4);           \
         FUNC_EXIT;                                                         \
         return;                                                            \
     } while (0)
@@ -151,7 +151,7 @@
     do                                                                             \
     {                                                                              \
         FUNC_ENTRY;                                                                \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5);           \
         FUNC_EXIT;                                                                 \
         return;                                                                    \
     } while (0)
@@ -160,7 +160,7 @@
     do                                                                                     \
     {                                                                                      \
         FUNC_ENTRY;                                                                        \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5, PARAM6);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5, PARAM6);           \
         FUNC_EXIT;                                                                         \
         return;                                                                            \
     } while (0)
@@ -169,9 +169,9 @@
     do                                                                                             \
     {                                                                                              \
         FUNC_ENTRY;                                                                                \
-        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5, PARAM6, PARAM7);     \
+        (void)rpc_##FUN(PARAM0, PARAM1, PARAM2, PARAM3, PARAM4, PARAM5, PARAM6, PARAM7);           \
         FUNC_EXIT;                                                                                 \
         return;                                                                                    \
     } while (0)
 
-#endif 
+#endif

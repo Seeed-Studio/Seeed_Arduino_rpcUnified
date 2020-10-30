@@ -70,11 +70,11 @@ extern "C"
  * Macro to expose desired log message.  Info messages do not include automatic function names and line numbers.
  */
 #ifdef ENABLE_RPC_INFO
-#define RPC_INFO(...)            \
-	{                            \
+#define RPC_INFO(...)              \
+	{                              \
 		rpc_printf("[%s]: ", TAG); \
-		rpc_printf(__VA_ARGS__); \
-		rpc_printf("\n\r");      \
+		rpc_printf(__VA_ARGS__);   \
+		rpc_printf("\n\r");        \
 	}
 #else
 #define RPC_INFO(...)

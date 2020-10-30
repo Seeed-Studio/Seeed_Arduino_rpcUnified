@@ -12,13 +12,11 @@
 
 using namespace erpc;
 
-
 #define NO_RTS_PIN 255
 #define NO_CTS_PIN 255
 #define RTS_RX_THRESHOLD 10
 
-EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX) :
-  EUart(_s, _pinRX, _pinTX, _padRX, _padTX, NO_RTS_PIN, NO_CTS_PIN)
+EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX) : EUart(_s, _pinRX, _pinTX, _padRX, _padTX, NO_RTS_PIN, NO_CTS_PIN)
 {
 }
 
@@ -27,7 +25,7 @@ EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, Ser
   sercom = _s;
   uc_pinRX = _pinRX;
   uc_pinTX = _pinTX;
-  uc_padRX = _padRX ;
+  uc_padRX = _padRX;
   uc_padTX = _padTX;
   uc_pinRTS = _pinRTS;
   uc_pinCTS = _pinCTS;
@@ -43,13 +41,16 @@ void EUart::begin(unsigned long baudrate, uint16_t config)
   pinPeripheral(uc_pinRX, g_APinDescription[uc_pinRX].ulPinType);
   pinPeripheral(uc_pinTX, g_APinDescription[uc_pinTX].ulPinType);
 
-  if (uc_padTX == UART_TX_RTS_CTS_PAD_0_2_3) { 
-    if (uc_pinCTS != NO_CTS_PIN) {
+  if (uc_padTX == UART_TX_RTS_CTS_PAD_0_2_3)
+  {
+    if (uc_pinCTS != NO_CTS_PIN)
+    {
       pinPeripheral(uc_pinCTS, g_APinDescription[uc_pinCTS].ulPinType);
     }
   }
 
-  if (uc_pinRTS != NO_RTS_PIN) {
+  if (uc_pinRTS != NO_RTS_PIN)
+  {
     pinMode(uc_pinRTS, OUTPUT);
 
     EPortType rtsPort = g_APinDescription[uc_pinRTS].ulPort;
@@ -76,42 +77,52 @@ void EUart::end()
 
 void EUart::flush()
 {
-  while(txBuffer.available()); // wait until TX buffer is empty
+  while (txBuffer.available())
+    ; // wait until TX buffer is empty
 
   sercom->flushUART();
 }
 
 void EUart::IrqHandler()
 {
-  if (sercom->isFrameErrorUART()) {
+  if (sercom->isFrameErrorUART())
+  {
     // frame error, next byte is invalid so read and discard it
     sercom->readDataUART();
 
     sercom->clearFrameErrorUART();
   }
 
-  if (sercom->availableDataUART()) {
+  if (sercom->availableDataUART())
+  {
     rxBuffer.store_char(sercom->readDataUART());
 
-    if (uc_pinRTS != NO_RTS_PIN) {
+    if (uc_pinRTS != NO_RTS_PIN)
+    {
       // RX buffer space is below the threshold, de-assert RTS
-      if (rxBuffer.availableForStore() < RTS_RX_THRESHOLD) {
+      if (rxBuffer.availableForStore() < RTS_RX_THRESHOLD)
+      {
         *pul_outsetRTS = ul_pinMaskRTS;
       }
     }
   }
 
-  if (sercom->isDataRegisterEmptyUART()) {
-    if (txBuffer.available()) {
+  if (sercom->isDataRegisterEmptyUART())
+  {
+    if (txBuffer.available())
+    {
       uint8_t data = txBuffer.read_char();
 
       sercom->writeDataUART(data);
-    } else {
+    }
+    else
+    {
       sercom->disableDataRegisterEmptyInterruptUART();
     }
   }
 
-  if (sercom->isUARTError()) {
+  if (sercom->isUARTError())
+  {
     sercom->acknowledgeUARTError();
     // TODO: if (sercom->isBufferOverflowErrorUART()) ....
     // TODO: if (sercom->isParityErrorUART()) ....
@@ -138,9 +149,11 @@ int EUart::read()
 {
   int c = rxBuffer.read_char();
 
-  if (uc_pinRTS != NO_RTS_PIN) {
+  if (uc_pinRTS != NO_RTS_PIN)
+  {
     // if there is enough space in the RX buffer, assert RTS
-    if (rxBuffer.availableForStore() > RTS_RX_THRESHOLD) {
+    if (rxBuffer.availableForStore() > RTS_RX_THRESHOLD)
+    {
       *pul_outclrRTS = ul_pinMaskRTS;
     }
   }
@@ -150,18 +163,24 @@ int EUart::read()
 
 size_t EUart::write(const uint8_t data)
 {
-  if (sercom->isDataRegisterEmptyUART() && txBuffer.available() == 0) {
+  if (sercom->isDataRegisterEmptyUART() && txBuffer.available() == 0)
+  {
     sercom->writeDataUART(data);
-  } else {
+  }
+  else
+  {
     // spin lock until a spot opens up in the buffer
-    while(txBuffer.isFull()) {
+    while (txBuffer.isFull())
+    {
       uint8_t interruptsEnabled = ((__get_PRIMASK() & 0x1) == 0);
 
-      if (interruptsEnabled) {
+      if (interruptsEnabled)
+      {
         uint32_t exceptionNumber = (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk);
 
         if (exceptionNumber == 0 ||
-              NVIC_GetPriority((IRQn_Type)(exceptionNumber - 16)) > SERCOM_NVIC_PRIORITY) {
+            NVIC_GetPriority((IRQn_Type)(exceptionNumber - 16)) > SERCOM_NVIC_PRIORITY)
+        {
           // no exception or called from an ISR with lower priority,
           // wait for free buffer spot via IRQ
           continue;
@@ -170,7 +189,8 @@ size_t EUart::write(const uint8_t data)
 
       // interrupts are disabled or called from ISR with higher or equal priority than the SERCOM IRQ
       // manually call the EUart IRQ handler when the data register is empty
-      if (sercom->isDataRegisterEmptyUART()) {
+      if (sercom->isDataRegisterEmptyUART())
+      {
         IrqHandler();
       }
     }
@@ -185,53 +205,51 @@ size_t EUart::write(const uint8_t data)
 
 SercomNumberStopBit EUart::extractNbStopBit(uint16_t config)
 {
-  switch(config & HARDSER_STOP_BIT_MASK)
+  switch (config & HARDSER_STOP_BIT_MASK)
   {
-    case HARDSER_STOP_BIT_1:
-    default:
-      return SERCOM_STOP_BIT_1;
+  case HARDSER_STOP_BIT_1:
+  default:
+    return SERCOM_STOP_BIT_1;
 
-    case HARDSER_STOP_BIT_2:
-      return SERCOM_STOP_BITS_2;
+  case HARDSER_STOP_BIT_2:
+    return SERCOM_STOP_BITS_2;
   }
 }
 
 SercomUartCharSize EUart::extractCharSize(uint16_t config)
 {
-  switch(config & HARDSER_DATA_MASK)
+  switch (config & HARDSER_DATA_MASK)
   {
-    case HARDSER_DATA_5:
-      return UART_CHAR_SIZE_5_BITS;
+  case HARDSER_DATA_5:
+    return UART_CHAR_SIZE_5_BITS;
 
-    case HARDSER_DATA_6:
-      return UART_CHAR_SIZE_6_BITS;
+  case HARDSER_DATA_6:
+    return UART_CHAR_SIZE_6_BITS;
 
-    case HARDSER_DATA_7:
-      return UART_CHAR_SIZE_7_BITS;
+  case HARDSER_DATA_7:
+    return UART_CHAR_SIZE_7_BITS;
 
-    case HARDSER_DATA_8:
-    default:
-      return UART_CHAR_SIZE_8_BITS;
-
+  case HARDSER_DATA_8:
+  default:
+    return UART_CHAR_SIZE_8_BITS;
   }
 }
 
 SercomParityMode EUart::extractParity(uint16_t config)
 {
-  switch(config & HARDSER_PARITY_MASK)
+  switch (config & HARDSER_PARITY_MASK)
   {
-    case HARDSER_PARITY_NONE:
-    default:
-      return SERCOM_NO_PARITY;
+  case HARDSER_PARITY_NONE:
+  default:
+    return SERCOM_NO_PARITY;
 
-    case HARDSER_PARITY_EVEN:
-      return SERCOM_EVEN_PARITY;
+  case HARDSER_PARITY_EVEN:
+    return SERCOM_EVEN_PARITY;
 
-    case HARDSER_PARITY_ODD:
-      return SERCOM_ODD_PARITY;
+  case HARDSER_PARITY_ODD:
+    return SERCOM_ODD_PARITY;
   }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
@@ -253,65 +271,79 @@ UartTransport::~UartTransport(void)
 erpc_status_t UartTransport::init(void)
 {
 
-    m_uartDrv->begin(m_baudrate);
-    return kErpcStatus_Success;
+  m_uartDrv->begin(m_baudrate);
+  return kErpcStatus_Success;
 }
 
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
-    uint32_t bytesRead = 0;
-    uint8_t *temp = data;
-    while (bytesRead < size)
+  uint32_t bytesRead = 0;
+  uint8_t *temp = data;
+  while (bytesRead < size)
+  {
+    while (m_uartDrv->available())
     {
-        while (m_uartDrv->available())
-        {
-            int c =  m_uartDrv->read();
-            if (c < 0)
-                break;
-            *data++ = (char)c;
-            bytesRead++;
-            if(bytesRead == size)
-                break;
-        }
-        delay(10);
+      int c = m_uartDrv->read();
+      if (c < 0)
+        break;
+      *data++ = (char)c;
+      bytesRead++;
+      if (bytesRead == size)
+        break;
     }
-    // Serial.printf("underlyingReceive: size %d\n\rdata:\n\r", size);
-    // for(int i = 0; i < bytesRead; i++)
-    // {
-    //     Serial.printf("0x%02x ", temp[i]);
-    //     if(i % 9 == 0 && i != 0)
-    //     {
-    //         Serial.printf("\n\r");
-    //     }
-    // }
-    // Serial.printf("\n\r");
-    return size != bytesRead ? kErpcStatus_ReceiveFailed : kErpcStatus_Success;
+    delay(10);
+  }
+  // Serial.printf("underlyingReceive: size %d\n\rdata:\n\r", size);
+  // for(int i = 0; i < bytesRead; i++)
+  // {
+  //     Serial.printf("0x%02x ", temp[i]);
+  //     if(i % 9 == 0 && i != 0)
+  //     {
+  //         Serial.printf("\n\r");
+  //     }
+  // }
+  // Serial.printf("\n\r");
+  return size != bytesRead ? kErpcStatus_ReceiveFailed : kErpcStatus_Success;
 }
 
 erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
 {
-    uint32_t bytesRead = size;
-    const uint8_t *temp = data;
-    // Serial.printf("underlyingSend: size %d\n\rdata:\n\r");
-    // for(int i = 0; i < bytesRead; i++)
-    // {
-    //     Serial.printf("0x%02x ", temp[i]);
-    //     if(i % 9 == 0 && i != 0)
-    //     {
-    //         Serial.printf("\n\r");
-    //     }
-    // }
-    // Serial.printf("\n\r");
-
-    uint32_t bytesWritten = m_uartDrv->write(data, size);
-    return size != bytesWritten ? kErpcStatus_SendFailed : kErpcStatus_Success;
+  uint32_t bytesRead = size;
+  const uint8_t *temp = data;
+  // Serial.printf("underlyingSend: size %d\n\rdata:\n\r");
+  // for(int i = 0; i < bytesRead; i++)
+  // {
+  //     Serial.printf("0x%02x ", temp[i]);
+  //     if(i % 9 == 0 && i != 0)
+  //     {
+  //         Serial.printf("\n\r");
+  //     }
+  // }
+  // Serial.printf("\n\r");
+  uint32_t remain = size;
+  uint32_t offset = 0;
+  uint32_t bytesWrite;
+  uint32_t bytesWritten = 0;
+  //!!! This is a bug, it needs to be solved in rtl8720 firmware
+  while ( remain > 0)
+  {
+    if (remain >= 64)
+      bytesWrite = 64;
+    else
+      bytesWrite = remain;
+    bytesWritten = m_uartDrv->write(data + offset, bytesWrite);
+    remain -= bytesWritten;
+    offset += bytesWritten;
+    delay(10);
+  }
+  return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
 
 bool UartTransport::hasMessage()
 {
-    if (m_uartDrv->available())
-    {
-        return true;
-    }
-    return false;
+  if (m_uartDrv->available())
+  {
+    return true;
+  }
+  return false;
 }
