@@ -49,7 +49,27 @@ unsigned long ssl_get_timeout(sslclient_context *ssl_client)
 int start_ssl_client(sslclient_context *ssl_client, const char *host, uint32_t port, int timeout, const char *rootCABuff, const char *cli_cert, const char *cli_key, const char *pskIdent, const char *psKey)
 {
     FUNC_ENTRY;
-    int ret = rpc_wifi_start_ssl_client((uint32_t)ssl_client, host, port, timeout, rootCABuff, cli_cert, cli_key, pskIdent, psKey);
+    if(rootCABuff != NULL)
+    {
+        rpc_wifi_ssl_set_rootCA((uint32_t)ssl_client, rootCABuff);
+    }
+     if(cli_cert != NULL)
+    {
+        rpc_wifi_ssl_set_cliCert((uint32_t)ssl_client, cli_cert);
+    }
+     if(cli_key != NULL)
+    {
+        rpc_wifi_ssl_set_cliKey((uint32_t)ssl_client, cli_key);
+    }
+     if(pskIdent != NULL)
+    {
+        rpc_wifi_ssl_set_pskIdent((uint32_t)ssl_client, pskIdent);
+    }
+    if(psKey != NULL)
+    {
+        rpc_wifi_ssl_set_psKey((uint32_t)ssl_client, psKey);
+    }
+    int ret = rpc_wifi_start_ssl_client((uint32_t)ssl_client, host, port, timeout);
     FUNC_EXIT_RC(ret);
 }
 
