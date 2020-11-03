@@ -291,18 +291,8 @@ int wifi_start_ap(
     int channel)
 {
     FUNC_ENTRY;
-
-    binary_t b_ssid;
-    binary_t b_pasword;
-
-    b_ssid.dataLength = ssid_len + 1;
-    b_ssid.data = (uint8_t *)ssid;
-
-    b_pasword.dataLength = password_len + 1;
-    b_pasword.data = (uint8_t *)password;
-    RPC_INFO("password: %s\n\r", password);
     int ret = 0;
-    ret = rpc_wifi_start_ap(&b_ssid, &b_pasword, security_type, channel);
+    ret = rpc_wifi_start_ap(ssid, password, security_type, channel);
     FUNC_EXIT;
     return ret;
 }
@@ -317,17 +307,8 @@ int wifi_start_ap_with_hidden_ssid(
 {
     FUNC_ENTRY;
 
-    binary_t b_ssid;
-    binary_t b_pasword;
-
-    b_ssid.dataLength = ssid_len + 1;
-    b_ssid.data = (uint8_t *)ssid;
-
-    b_pasword.dataLength = password_len + 1;
-    b_pasword.data = (uint8_t *)password;
-
     int ret = 0;
-    ret = rpc_wifi_start_ap_with_hidden_ssid(&b_ssid, &b_pasword, security_type, channel);
+    ret = rpc_wifi_start_ap_with_hidden_ssid(ssid, password, security_type, channel);
     FUNC_EXIT;
     return ret;
 }
