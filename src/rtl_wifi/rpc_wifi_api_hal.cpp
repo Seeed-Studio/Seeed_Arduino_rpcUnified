@@ -27,17 +27,8 @@ int wifi_connect(
 {
     FUNC_ENTRY;
 
-    binary_t b_ssid;
-    binary_t b_pasword;
-
-    b_ssid.dataLength = ssid_len + 1;
-    b_ssid.data = (uint8_t *)ssid;
-
-    b_pasword.dataLength = password_len + 1;
-    b_pasword.data = (uint8_t *)password;
-
     int ret = 0;
-    ret = rpc_wifi_connect(&b_ssid, &b_pasword, security_type, key_id, NULL);
+    ret = rpc_wifi_connect(ssid, password, security_type, key_id, NULL);
 
     FUNC_EXIT;
     return ret;
@@ -56,20 +47,12 @@ int wifi_connect_bssid(
 {
     FUNC_ENTRY
     binary_t b_bssid;
-    binary_t b_ssid;
-    binary_t b_pasword;
 
     b_bssid.dataLength = ETH_ALEN;
     b_bssid.data = bssid;
 
-    b_ssid.dataLength = ssid_len + 1;
-    b_ssid.data = (uint8_t *)ssid;
-
-    b_pasword.dataLength = password_len + 1;
-    b_pasword.data = (uint8_t *)password;
-
     int ret = 0;
-    ret = rpc_wifi_connect_bssid(&b_bssid, &b_ssid, &b_pasword, security_type, key_id, NULL);
+    ret = rpc_wifi_connect_bssid(&b_bssid, ssid, password, security_type, key_id, NULL);
 
     FUNC_EXIT
     return ret;
