@@ -11,7 +11,6 @@
 #include "Arduino.h"
 #include "rtl_wifi/wifi_unified.h"
 #include "ssl_client.h"
-#include "WiFi.h"
 
 sslclient_context *ssl_client_create(void)
 {
