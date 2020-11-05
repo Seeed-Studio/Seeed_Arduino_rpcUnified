@@ -176,7 +176,7 @@ extern "C" {
 #ifndef errno
 extern int errno;
 #endif
-
+#error dfasdf
 #else /* LWIP_PROVIDE_ERRNO */
 
 /* Define LWIP_ERRNO_INCLUDE to <errno.h> to include the error defines here */

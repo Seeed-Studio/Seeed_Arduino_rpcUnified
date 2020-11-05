@@ -344,7 +344,7 @@ extern "C" {
 #define  EDEADLK      35  /* Resource deadlock would occur */
 #define  ENAMETOOLONG 36  /* File name too long */
 #define  ENOLCK       37  /* No record locks available */
-#define  ENOSYS       38  /* Function not implemented */
+#define  ENOLCK       38  /* Function not implemented */
 #define  ENOTEMPTY    39  /* Directory not empty */
 #define  ELOOP        40  /* Too many symbolic links encountered */
 #define  EWOULDBLOCK  EAGAIN  /* Operation would block */

@@ -9,11 +9,9 @@
 
 #include "sdkconfig.h"
 #include "esp_err.h"
-#include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include "esp_smartconfig.h"
 #include "esp_system.h"
-#include "tcpip_adapter.h"
 #include "esp_err.h"
 #include "esp_hal_log.h"
 
