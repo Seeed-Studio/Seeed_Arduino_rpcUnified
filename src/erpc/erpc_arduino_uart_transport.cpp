@@ -334,7 +334,7 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
     bytesWritten = m_uartDrv->write(data + offset, bytesWrite);
     remain -= bytesWritten;
     offset += bytesWritten;
-    delay(10);
+    delay(15);
   }
   return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }

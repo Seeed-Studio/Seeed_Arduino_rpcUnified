@@ -292,7 +292,7 @@ bool le_scan_info_filter(bool enable, uint8_t offset, uint8_t len, uint8_t *p_fi
 
 T_GAP_CAUSE le_get_conn_param(T_LE_CONN_PARAM_TYPE param, void *p_value, uint8_t conn_id)
 {
-    FUNC_ENTRY("le_get_conn_param called");
+    FUNC_ENTRY;
     T_GAP_CAUSE ret = GAP_CAUSE_SUCCESS;
     binary_t value;
     ret = (T_GAP_CAUSE)rpc_le_get_conn_param((RPC_T_LE_CONN_PARAM_TYPE)param, &value, conn_id);

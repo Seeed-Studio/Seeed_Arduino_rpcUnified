@@ -159,7 +159,7 @@ int lwip_send(int s, const void *dataptr, size_t size, int flags)
 #ifdef ENABLE_RPC_DEBUG
     for (int i = 0; i < size; i++)
     {
-        rpc_printf("%c ", b_data.data[i]);
+        rpc_printf("%c", b_data.data[i]);
     }
     rpc_printf("\n\r");
 #endif
