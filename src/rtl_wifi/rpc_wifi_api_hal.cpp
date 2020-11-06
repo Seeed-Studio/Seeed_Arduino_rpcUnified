@@ -26,9 +26,11 @@ int wifi_connect(
     void *semaphore)
 {
     FUNC_ENTRY;
-
+    (void)semaphore;
+    (void)ssid_len;
+    (void)password_len;
     int ret = 0;
-    ret = rpc_wifi_connect(ssid, password, security_type, key_id, NULL);
+    ret = rpc_wifi_connect(ssid, password, security_type, key_id, (uint32_t)NULL);
 
     FUNC_EXIT;
     return ret;
@@ -45,14 +47,19 @@ int wifi_connect_bssid(
     int key_id,
     void *semaphore)
 {
-    FUNC_ENTRY
+    FUNC_ENTRY(void)
+    (void)bssid_len;
+    (void)semaphore;
+    (void)ssid_len;
+    (void)password_len;
+
     binary_t b_bssid;
 
     b_bssid.dataLength = ETH_ALEN;
     b_bssid.data = bssid;
 
     int ret = 0;
-    ret = rpc_wifi_connect_bssid(&b_bssid, ssid, password, security_type, key_id, NULL);
+    ret = rpc_wifi_connect_bssid(&b_bssid, ssid, password, security_type, key_id, (uint32_t)NULL);
 
     FUNC_EXIT
     return ret;
@@ -292,6 +299,8 @@ int wifi_start_ap(
 {
     FUNC_ENTRY;
     int ret = 0;
+    (void)ssid_len;
+    (void)password_len;
     ret = rpc_wifi_start_ap(ssid, password, security_type, channel);
     FUNC_EXIT;
     return ret;
@@ -306,6 +315,8 @@ int wifi_start_ap_with_hidden_ssid(
     int channel)
 {
     FUNC_ENTRY;
+    (void)ssid_len;
+    (void)password_len;
 
     int ret = 0;
     ret = rpc_wifi_start_ap_with_hidden_ssid(ssid, password, security_type, channel);
@@ -331,7 +342,7 @@ int wifi_get_setting(const char *ifname, rtw_wifi_setting_t *pSetting)
     int ret = 0;
     binary_t b_pSetting;
     ret = rpc_wifi_get_setting(ifname, &b_pSetting);
-    if (ret = RTW_SUCCESS)
+    if (ret == RTW_SUCCESS)
     {
         memcpy(pSetting, b_pSetting.data, sizeof(rtw_wifi_setting_t));
     }
@@ -566,7 +577,9 @@ void tcpip_adapter_init(void)
 
 esp_err_t tcpip_adapter_eth_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
 {
-    return ESP_OK;
+    (void)mac;
+    (void)ip_info;
+    return ESP_FAIL;
 }
 
 esp_err_t tcpip_adapter_sta_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
@@ -636,7 +649,7 @@ esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_i
     {
         memcpy(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
     }
-    tcpip_adapter_ip_info_t *temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
+    // tcpip_adapter_ip_info_t *temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
     // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, ip_info->ip, ip_info->netmask, ip_info->gw);
     // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, temp->ip, temp->netmask, temp->gw);
     if (_ip_info.data != NULL)
@@ -766,15 +779,18 @@ esp_err_t tcpip_adapter_set_hostname(tcpip_adapter_if_t tcpip_if, const char *ho
 {
     FUNC_ENTRY;
     FUNC_EXIT;
-    return ESP_OK;
+    (void)tcpip_if;
+    (void)hostname;
+    return ESP_FAIL;
 }
 
 esp_err_t tcpip_adapter_get_hostname(tcpip_adapter_if_t tcpip_if, const char **hostname)
 {
     FUNC_ENTRY;
-    FUNC_EXIT;
+    (void)tcpip_if;
     static char host[] = "Wio Terminal";
     *hostname = host;
+    FUNC_EXIT;
     return ESP_OK;
 }
 
@@ -783,13 +799,18 @@ esp_err_t tcpip_adapter_dhcps_option(tcpip_adapter_option_mode_t opt_op, tcpip_a
 
 {
     FUNC_ENTRY;
+    (void)opt_op;
+    (void)opt_id;
+    (void)opt_val;
+    (void)opt_len;
     FUNC_EXIT;
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t tcpip_adapter_create_ip6_linklocal(tcpip_adapter_if_t tcpip_if)
 {
     FUNC_ENTRY;
+    (void)tcpip_if;
     FUNC_EXIT;
     return ESP_FAIL;
 }
@@ -797,6 +818,8 @@ esp_err_t tcpip_adapter_create_ip6_linklocal(tcpip_adapter_if_t tcpip_if)
 esp_err_t tcpip_adapter_get_ip6_linklocal(tcpip_adapter_if_t tcpip_if, ip6_addr_t *if_ip6)
 {
     FUNC_ENTRY;
+    (void)tcpip_if;
+    (void)if_ip6;
     FUNC_EXIT;
     return ESP_FAIL;
 }

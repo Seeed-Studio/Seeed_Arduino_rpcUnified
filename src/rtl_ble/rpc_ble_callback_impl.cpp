@@ -133,6 +133,7 @@ RPC_T_APP_RESULT rpc_ble_gattc_callback(uint8_t client_id, uint8_t conn_id, cons
 RPC_T_APP_RESULT rpc_ble_gatts_callback(uint8_t gatt_if, uint8_t conn_id, uint16_t attrib_index, RPC_T_SERVICE_CALLBACK_TYPE event, uint16_t property, binary_t *read_cb_data, const binary_t *write_cb_data, const binary_t *app_cb_data)
 {
     FUNC_ENTRY;
+    (void)app_cb_data;
     RPC_T_APP_RESULT result = RPC_APP_RESULT_SUCCESS;
     ble_service_cb_data_t *cb_data = (ble_service_cb_data_t *)malloc(sizeof(ble_service_cb_data_t));
 

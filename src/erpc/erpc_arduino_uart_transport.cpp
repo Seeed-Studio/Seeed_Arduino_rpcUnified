@@ -278,7 +278,7 @@ erpc_status_t UartTransport::init(void)
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
   uint32_t bytesRead = 0;
-  uint8_t *temp = data;
+  //uint8_t *temp = data;
   while (bytesRead < size)
   {
     while (m_uartDrv->available())
@@ -308,8 +308,8 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 
 erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
 {
-  uint32_t bytesRead = size;
-  const uint8_t *temp = data;
+  //uint32_t bytesRead = size;
+  //const uint8_t *temp = data;
   // Serial.printf("underlyingSend: size %d\n\rdata:\n\r");
   // for(int i = 0; i < bytesRead; i++)
   // {

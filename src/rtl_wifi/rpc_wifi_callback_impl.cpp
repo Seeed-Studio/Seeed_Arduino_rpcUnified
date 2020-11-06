@@ -28,15 +28,10 @@ void rpc_wifi_event_callback(const binary_t *event)
 {
     FUNC_ENTRY;
     system_event_t *event_data = (system_event_t *)event->data;
-    uint32_t err = RTW_SUCCESS;
 
     if (ptr_wifi_event_callback != NULL)
     {
-        esp_err_t ret = ptr_wifi_event_callback(NULL, event_data);
-        if (ret != ESP_OK)
-        {
-            err = RTW_ERROR;
-        }
+        ptr_wifi_event_callback(NULL, event_data);
     }
     FUNC_EXIT;
 }

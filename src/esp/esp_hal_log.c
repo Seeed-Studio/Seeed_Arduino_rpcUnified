@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "esp_hal_log.h"
+#include "FreeRTOS.h"
 
 //used by hal log
 const char * pathToFileName(const char * path)
@@ -24,11 +25,16 @@ int dump_tasks(void) {
     static char TaskListBuf[0x180];
 
     vTaskList(TaskListBuf);
-    printf(TaskListBuf);
+    rpc_printf(TaskListBuf);
     return 0;
 }
 
 int ntp_conf_time(int timezone, int reserved, const char* server1, const char* server2, const char* server3) {
+    (void)timezone;
+    (void)reserved;
+    (void)server1;
+    (void)server2;
+    (void)server3;
     // esp_datetime_t et[1];
     // struct tm tm[1] = {{0}};
     // struct timeval tv[1];

@@ -74,6 +74,9 @@ int start_ssl_client(sslclient_context *ssl_client, const char *host, uint32_t p
 
 void stop_ssl_socket(sslclient_context *ssl_client, const char *rootCABuff, const char *cli_cert, const char *cli_key)
 {
+    (void)rootCABuff;
+    (void)cli_cert;
+    (void)cli_key;
     RPC_FUN_RETURN_VOID_1(wifi_stop_ssl_socket, (uint32_t)ssl_client);
 }
 

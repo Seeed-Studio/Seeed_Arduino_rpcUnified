@@ -7,6 +7,8 @@
 #include "rpc_wifi_lwip_utils.h"
 
 #include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
 #include "dns.h"
 #include "erpc/erpc_shim_unified.h"
 #include "erpc/erpc_port.h"
@@ -73,7 +75,7 @@ err_t dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *addr, dns_foun
     b_callback_arg.data = data;
     b_callback_arg.dataLength = 4;
   }
-  err_t ret = rpc_dns_gethostbyname_addrtype(hostname, &b_addr, found, &b_callback_arg, dns_addrtype);
+  err_t ret = rpc_dns_gethostbyname_addrtype(hostname, &b_addr, (uint32_t)found, &b_callback_arg, dns_addrtype);
   memcpy(addr, b_addr.data, sizeof(ip_addr_t));
   if(data != NULL)
   {
