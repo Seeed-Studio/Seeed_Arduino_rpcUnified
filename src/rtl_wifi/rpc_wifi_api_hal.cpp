@@ -502,10 +502,10 @@ int wifi_get_reconnect_data(wlan_fast_reconnect_profile_t *wifi_info)
     return ret;
 }
 
-//int wifi_clear_reconnect_data()
-//{
-//    RPC_FUN_RETURN_0(wifi_clear_reconnect_data, int32_t);
-//}
+int wifi_clear_reconnect_data()
+{
+   RPC_FUN_RETURN_0(wifi_clear_reconnect_data, int32_t);
+}
 
 int32_t wifi_scan_start()
 {
