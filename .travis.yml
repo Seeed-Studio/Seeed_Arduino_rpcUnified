@@ -12,7 +12,7 @@ before_install:
 script:
    - chmod +x seeed-arduino-ci.sh
    - cat $PWD/seeed-arduino-ci.sh
-   - bash $PWD/seeed-arduino-ci.sh -b "Seeeduino:samd:seeed_wio_terminal" -s ble_client/ble_server Seeed-Studio/Seeed_Arduino_FreeRTOS.git
+   - bash $PWD/seeed-arduino-ci.sh -b "Seeeduino:samd:seeed_wio_terminal" -s ble_client/ble_server/wifi_ap/wifi_scan/wifi_sta Seeed-Studio/Seeed_Arduino_FreeRTOS.git
 
 notifications:
   email:
