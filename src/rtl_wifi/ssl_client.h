@@ -5,13 +5,13 @@
 #ifndef ARD_SSL_H
 #define ARD_SSL_H
 #include "rtl_wifi/wifi_unified.h"
-#include "mbedtls/platform.h"
-#include "mbedtls/net.h"
-#include "mbedtls/debug.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/error.h"
+#include "rpc_mbedtls/platform.h"
+#include "rpc_mbedtls/net.h"
+#include "rpc_mbedtls/debug.h"
+#include "rpc_mbedtls/ssl.h"
+#include "rpc_mbedtls/entropy.h"
+#include "rpc_mbedtls/ctr_drbg.h"
+#include "rpc_mbedtls/error.h"
 
 typedef struct sslclient_context {
     int socket;

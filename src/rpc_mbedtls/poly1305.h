@@ -34,7 +34,7 @@
 #define MBEDTLS_POLY1305_H
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "rpc_mbedtls/config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif

@@ -2698,7 +2698,7 @@
 /* \} name SECTION: Module configuration options */
 
 #if defined(TARGET_LIKE_MBED)
-#include "mbedtls/target_config.h"
+#include "rpc_mbedtls/target_config.h"
 #endif
 
 /*
@@ -2714,6 +2714,6 @@
 #include MBEDTLS_USER_CONFIG_FILE
 #endif
 
-#include "mbedtls/check_config.h"
+#include "rpc_mbedtls/check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */
