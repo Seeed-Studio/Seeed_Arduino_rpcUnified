@@ -625,6 +625,8 @@ static inline int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *ex
 #endif /* ESP_HAS_SELECT */
 static inline int ioctlsocket(int s,long cmd,void *argp)
 { return lwip_ioctl_r(s,cmd,argp); }
+static inline int fcntl(int s,int cmd,int val)
+{ return lwip_fcntl_r(s,cmd,val); }
 
 #if LWIP_POSIX_SOCKETS_IO_NAMES
 static inline int read(int s,void *mem,size_t len)
