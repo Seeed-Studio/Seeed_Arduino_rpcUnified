@@ -133,23 +133,30 @@ int lwip_read(int s, void *mem, size_t len)
     }
     FUNC_EXIT_RC(ret);
 }
-int lwip_recvfrom(int s, void *mem, size_t len, int flags,
-                  struct sockaddr *from, socklen_t *fromlen)
+
+int lwip_recvfrom(int s, void *mem, size_t len, int flags,struct sockaddr *from, socklen_t *fromlen)
 {
     FUNC_ENTRY;
     binary_t b_mem;
     binary_t b_from;
-    b_from.data = (uint8_t *)from;
-    b_from.dataLength = sizeof(struct sockaddr);
+    
     int ret = rpc_lwip_recvfrom(s, &b_mem, len, flags, &b_from, fromlen, len * 10);
     if (ret > 0)
     {
         memcpy(mem, b_mem.data, b_mem.dataLength);
+        memcpy(from,b_from.data,b_from.dataLength);
     }
+
     if (b_mem.data != NULL)
     {
         erpc_free(b_mem.data);
     }
+
+    if (b_from.data != NULL)
+    {
+        erpc_free(b_from.data);
+    }
+
     FUNC_EXIT_RC(ret);
 }
 int lwip_send(int s, const void *dataptr, size_t size, int flags)

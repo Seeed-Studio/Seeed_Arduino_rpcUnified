@@ -8,6 +8,16 @@
 #include "esp/esp_lib_unified.h"
 #include "rpc_wifi_api_hal.h"
 
+int wifi_mode = RTW_MODE_NONE;
+
+uint32_t wifi_get_netif(tcpip_adapter_if_t tcpip_if)
+{
+    if(wifi_mode == RTW_MODE_STA_AP && tcpip_if == TCPIP_ADAPTER_IF_AP){
+         return 1;
+    }
+
+    return 0;
+}
 //! @name rpc_wifi_drv
 //@{
 
@@ -236,16 +246,19 @@ int wifi_rf_off(void)
 
 int wifi_on(rtw_mode_t mode)
 {
+    wifi_mode = mode;
     RPC_FUN_RETURN_1(wifi_on, (uint32_t)mode, int);
 }
 
 int wifi_off(void)
 {
+    wifi_mode = RTW_MODE_NONE;
     RPC_FUN_RETURN_0(wifi_off, int);
 }
 
 int wifi_set_mode(rtw_mode_t mode)
 {
+    wifi_mode = mode;
     RPC_FUN_RETURN_1(wifi_set_mode, (uint32_t)mode, int);
 }
 
@@ -489,6 +502,11 @@ int wifi_get_reconnect_data(wlan_fast_reconnect_profile_t *wifi_info)
     return ret;
 }
 
+int wifi_clear_reconnect_data()
+{
+   RPC_FUN_RETURN_0(wifi_clear_reconnect_data, int32_t);
+}
+
 int32_t wifi_scan_start()
 {
     RPC_FUN_RETURN_0(wifi_scan_start, int32_t);
@@ -622,36 +640,43 @@ esp_err_t tcpip_adapter_ap_start(uint8_t *mac, tcpip_adapter_ip_info_t *ip_info)
 
 esp_err_t tcpip_adapter_stop(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_stop, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+
+    RPC_FUN_RETURN_1(tcpip_adapter_stop, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_up(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_up, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+
+    RPC_FUN_RETURN_1(tcpip_adapter_up, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_down(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_down, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+
+    RPC_FUN_RETURN_1(tcpip_adapter_down, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_ip_info_t *ip_info)
 {
     FUNC_ENTRY;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     esp_err_t ret = ESP_OK;
     if (ip_info == NULL)
     {
         return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
     }
     binary_t _ip_info;
-    ret = (esp_err_t)rpc_tcpip_adapter_get_ip_info((uint32_t)tcpip_if, &_ip_info);
+    ret = (esp_err_t)rpc_tcpip_adapter_get_ip_info((uint32_t)netif, &_ip_info);
     if (ret == ESP_OK)
     {
         memcpy(ip_info, _ip_info.data, sizeof(tcpip_adapter_ip_info_t));
     }
     // tcpip_adapter_ip_info_t *temp = (tcpip_adapter_ip_info_t *)_ip_info.data;
-    // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, ip_info->ip, ip_info->netmask, ip_info->gw);
-    // RPC_DEBUG("tcpip_if:%d ip_addr:%d netmask:%d, gw:%d", tcpip_if, temp->ip, temp->netmask, temp->gw);
+    // RPC_DEBUG("netif:%d ip_addr:%d netmask:%d, gw:%d", netif, ip_info->ip, ip_info->netmask, ip_info->gw);
+    // RPC_DEBUG("netif:%d ip_addr:%d netmask:%d, gw:%d", netif, temp->ip, temp->netmask, temp->gw);
     if (_ip_info.data != NULL)
     {
         erpc_free(_ip_info.data);
@@ -664,6 +689,7 @@ esp_err_t tcpip_adapter_get_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_i
 esp_err_t tcpip_adapter_set_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_ip_info_t *ip_info)
 {
     FUNC_ENTRY;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     esp_err_t ret = ESP_OK;
     if (ip_info == NULL)
     {
@@ -672,7 +698,7 @@ esp_err_t tcpip_adapter_set_ip_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_i
     binary_t _ip_info;
     _ip_info.dataLength = sizeof(tcpip_adapter_ip_info_t);
     _ip_info.data = (uint8_t *)ip_info;
-    ret = (esp_err_t)rpc_tcpip_adapter_set_ip_info((uint32_t)tcpip_if, &_ip_info);
+    ret = (esp_err_t)rpc_tcpip_adapter_set_ip_info((uint32_t)netif, &_ip_info);
     FUNC_EXIT;
     return ret;
 }
@@ -681,6 +707,7 @@ esp_err_t tcpip_adapter_set_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_
 {
     FUNC_ENTRY;
     esp_err_t ret = ESP_OK;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     if (dns == NULL)
     {
         return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
@@ -688,7 +715,7 @@ esp_err_t tcpip_adapter_set_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_
     binary_t _dns;
     _dns.dataLength = sizeof(tcpip_adapter_dns_info_t);
     _dns.data = (uint8_t *)dns;
-    ret = (esp_err_t)rpc_tcpip_adapter_set_dns_info((uint32_t)tcpip_if, (uint32_t)type, &_dns);
+    ret = (esp_err_t)rpc_tcpip_adapter_set_dns_info((uint32_t)netif, (uint32_t)type, &_dns);
     FUNC_EXIT;
     return ret;
 }
@@ -696,13 +723,14 @@ esp_err_t tcpip_adapter_set_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_
 esp_err_t tcpip_adapter_get_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_dns_type_t type, tcpip_adapter_dns_info_t *dns)
 {
     FUNC_ENTRY;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     esp_err_t ret = ESP_OK;
     if (dns == NULL)
     {
         return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
     }
     binary_t _dns;
-    ret = (esp_err_t)rpc_tcpip_adapter_get_dns_info((uint32_t)tcpip_if, (uint32_t)type, &_dns);
+    ret = (esp_err_t)rpc_tcpip_adapter_get_dns_info((uint32_t)netif, (uint32_t)type, &_dns);
     if (ret == ESP_OK)
     {
         memcpy(dns, _dns.data, sizeof(tcpip_adapter_dns_info_t));
@@ -719,13 +747,14 @@ esp_err_t tcpip_adapter_get_dns_info(tcpip_adapter_if_t tcpip_if, tcpip_adapter_
 esp_err_t tcpip_adapter_get_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
 {
     FUNC_ENTRY;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     esp_err_t ret = ESP_OK;
     if (mac == NULL)
     {
         return ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS;
     }
     binary_t _mac;
-    ret = (esp_err_t)rpc_tcpip_adapter_get_mac((uint32_t)tcpip_if, &_mac);
+    ret = (esp_err_t)rpc_tcpip_adapter_get_mac((uint32_t)netif, &_mac);
     if (ret == ESP_OK)
     {
         memcpy(mac, _mac.data, _mac.dataLength);
@@ -742,6 +771,7 @@ esp_err_t tcpip_adapter_get_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
 esp_err_t tcpip_adapter_set_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
 {
     FUNC_ENTRY;
+    uint32_t netif = wifi_get_netif(tcpip_if);
     esp_err_t ret = ESP_OK;
     if (mac == NULL)
     {
@@ -750,29 +780,33 @@ esp_err_t tcpip_adapter_set_mac(tcpip_adapter_if_t tcpip_if, uint8_t *mac)
     binary_t _mac;
     _mac.dataLength = strlen((char *)mac) + 1;
     _mac.data = (uint8_t *)mac;
-    ret = (esp_err_t)rpc_tcpip_adapter_set_mac((uint32_t)tcpip_if, &_mac);
+    ret = (esp_err_t)rpc_tcpip_adapter_set_mac((uint32_t)netif, &_mac);
     FUNC_EXIT;
     return ret;
 }
 
 esp_err_t tcpip_adapter_dhcps_start(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_start, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_start, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_dhcps_stop(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_stop, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcps_stop, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_dhcpc_start(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_start, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_start, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_dhcpc_stop(tcpip_adapter_if_t tcpip_if)
 {
-    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_stop, (uint32_t)tcpip_if, esp_err_t);
+    uint32_t netif = wifi_get_netif(tcpip_if);
+    RPC_FUN_RETURN_1(tcpip_adapter_dhcpc_stop, (uint32_t)netif, esp_err_t);
 }
 
 esp_err_t tcpip_adapter_set_hostname(tcpip_adapter_if_t tcpip_if, const char *hostname)

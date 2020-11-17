@@ -25,6 +25,7 @@ typedef struct wlan_fast_reconnect
 
 void system_event_callback_reg(system_event_cb_t system_event_cb);
 int wifi_get_reconnect_data(wlan_fast_reconnect_profile_t *wifi_info);
+int wifi_clear_reconnect_data();
 
 bool wifi_is_scaning();
 uint16_t wifi_scan_get_ap_num();
