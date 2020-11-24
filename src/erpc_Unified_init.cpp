@@ -12,6 +12,7 @@
 #include "erpc/erpc_transport_arbitrator.h"
 #include "erpc/erpc_port.h"
 #include "erpc/erpc_shim_unified.h"
+#include "erpc_board_config.h"
 
 using namespace erpc;
 
@@ -20,8 +21,9 @@ class MyMessageBufferFactory : public MessageBufferFactory
 public:
     virtual MessageBuffer create()
     {
-        uint8_t *buf = new uint8_t[4096];
-        return MessageBuffer(buf, 4096);
+        uint8_t *buf = new uint8_t[MSG_BUF_SIZE];
+
+        return MessageBuffer(buf, MSG_BUF_SIZE);
     }
 
     virtual void dispose(MessageBuffer *buf)
@@ -32,7 +34,10 @@ public:
         }
     }
 };
-//#define ble_uart Serial1
+
+#ifdef RTL872X_SERIAL
+UartTransport g_transport(&RTL872X_SERIAL, RTL872X_SERIAL_BAUD);
+#else
 #define PIN_BLE_SERIAL_X_RX (84ul)
 #define PIN_BLE_SERIAL_X_TX (85ul)
 #define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
@@ -61,8 +66,9 @@ extern "C"
 {
     INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
 }
+UartTransport g_transport(&ble_uart, RTL872X_SERIAL_BAUD);
+#endif
 
-UartTransport g_transport(&ble_uart, 1843200);
 MyMessageBufferFactory g_msgFactory;
 BasicCodecFactory g_basicCodecFactory;
 ArbitratedClientManager *g_client;
@@ -101,11 +107,13 @@ void runServer(void *arg)
     }
 }
 
-Thread serverThread(&runServer, configMAX_PRIORITIES, 8192, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 20480, "runClient");
+Thread serverThread(&runServer, configMAX_PRIORITIES,       SERVER_STACK_SIZE, "runServer");
+Thread clientThread(&runClient, configMAX_PRIORITIES - 2,   CLIENT_STACK_SIZE, "runClient");
 
 void erpc_init()
 {
+    Serial.begin(115200);
+
     pinMode(RTL8720D_CHIP_PU, OUTPUT);
     digitalWrite(RTL8720D_CHIP_PU, LOW);
     delay(100);

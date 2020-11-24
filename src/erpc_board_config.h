@@ -1,0 +1,26 @@
+#ifndef __ERPC_BOARD_CONFIG_H__
+#define __ERPC_BOARD_CONFIG_H__
+
+#ifdef SEEED_XIAO_M0
+#define MSG_BUF_SIZE (3 * 512)
+
+#define RTL872X_SERIAL      Serial1
+#define RTL872X_SERIAL_BAUD 1843200
+
+#define SERVER_STACK_SIZE   (4 * 1024)
+#define CLIENT_STACK_SIZE   (4 * 1024)
+
+#elif SEEED_WIO_TERMINAL
+#define MSG_BUF_SIZE (4 * 1024)
+
+#define RTL872X_SERIAL_BAUD 1843200
+
+#define SERVER_STACK_SIZE   (8 * 1024)
+#define CLIENT_STACK_SIZE   (20 * 1024)
+
+#else
+#error "BOARD_TYPE ERROR"
+#endif
+
+#endif // __ERPC_BOARD_CONFIG_H__
+
