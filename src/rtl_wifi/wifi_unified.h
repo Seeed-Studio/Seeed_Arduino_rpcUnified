@@ -8,4 +8,5 @@
 #include "esp/esp_wifi.h"
 #include "esp/tcpip_adapter.h"
 #include "rpc_wifi_api_hal.h"
+#include "rpc_wifi_mdns.h"
 #endif /* RTL_WIFI_UNIFIED_H */

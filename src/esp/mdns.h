@@ -14,7 +14,7 @@
 #ifndef ESP_MDNS_H_
 #define ESP_MDNS_H_
 
-#include <tcpip_adapter.h>
+#include "tcpip_adapter.h"
 #include "esp_event.h"
 
 #ifdef __cplusplus
