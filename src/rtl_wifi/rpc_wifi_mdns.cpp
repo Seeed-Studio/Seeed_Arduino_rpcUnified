@@ -116,9 +116,9 @@ void mdns_query_results_free(mdns_result_t * results)
     int i;
     
     FUNC_ENTRY;
-    if(results != NULL){
-        while (results) {
-            r = results;
+    r = results;
+    if(r != NULL){
+        while (r) {
 
             free((char *)(r->hostname));
             free((char *)(r->instance_name));
@@ -134,7 +134,7 @@ void mdns_query_results_free(mdns_result_t * results)
                 erpc_free(a);
             }
 
-            results = results->next;
+            r = r->next;
         }
         erpc_free(results);
     }
@@ -215,6 +215,9 @@ esp_err_t mdns_query_ptr(const char * service_type, const char * proto, uint32_t
                                 return ESP_FAIL;
                             }
                         }
+                        if(binary_txt.data){
+                            erpc_free(binary_txt.data);
+                        }
                     }
 
                     for(count_addr = 0 ; count_addr < rpc_result->addr_count ; count_addr++){
@@ -228,6 +231,13 @@ esp_err_t mdns_query_ptr(const char * service_type, const char * proto, uint32_t
                             mdns_addr->next = result->addr;
                             result->addr = mdns_addr;
                         }
+                        if(binary_addr.data){
+                            erpc_free(binary_addr.data);
+                        }
+                    }
+
+                    if(binary_result.data){
+                        erpc_free(binary_result.data);
                     }
                 }else{
                     FUNC_EXIT;
@@ -250,6 +260,10 @@ esp_err_t mdns_query_a(const char * host_name, uint32_t timeout, ip4_addr_t * ad
     esp_err_t ret = rpc_mdns_query_a(host_name,timeout,&binary_addr);
     if(ret == ESP_OK){
         memcpy(&addr->addr,binary_addr.data,sizeof(u32_t));
+    }
+
+    if(binary_addr.data){
+        erpc_free(binary_addr.data);
     }
 
     FUNC_EXIT;
