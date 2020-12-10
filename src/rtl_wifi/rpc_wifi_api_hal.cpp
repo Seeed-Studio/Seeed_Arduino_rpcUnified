@@ -1,5 +1,4 @@
 #define TAG "WIFI API"
-#include "rpc_wifi_api_utils.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +6,10 @@
 #include "erpc/erpc_port.h"
 #include "esp/esp_lib_unified.h"
 #include "rpc_wifi_api_hal.h"
+#include "rpc_wifi_api_utils.h"
+#include "lwip/err.h"
+#include "lwip/tcp.h"
+#include "lwip/priv/tcpip_priv.h"
 
 int wifi_mode = RTW_MODE_NONE;
 
@@ -25,6 +28,39 @@ uint32_t wifi_get_netif(tcpip_adapter_if_t tcpip_if)
 // {
 //     RPC_FUN_RETURN_0(wifi_manager_init, int);
 // }
+
+void copy_rtp_to_tp(struct rpc_tcp_pcb *rpc_pcb,struct tcp_pcb *pcb)
+{
+    pcb->state = rpc_pcb->state;
+    pcb->remote_port = rpc_pcb->remote_port;
+    pcb->local_port = rpc_pcb->local_port;
+    pcb->flags = rpc_pcb->flags;
+    pcb->mss = rpc_pcb->mss;
+    pcb->snd_buf = rpc_pcb->snd_buf;
+    pcb->master_addr = rpc_pcb->master_addr;
+    pcb->client_addr = rpc_pcb->client_addr;
+
+    pcb->local_ip.u_addr.ip4.addr = rpc_pcb->local_ipv4;
+    pcb->local_ip.type = IPADDR_TYPE_V4;
+
+    pcb->remote_ip.u_addr.ip4.addr = rpc_pcb->remote_ipv4;
+    pcb->remote_ip.type = IPADDR_TYPE_V4;
+}
+
+void copy_tp_to_rtp(struct tcp_pcb *pcb,struct rpc_tcp_pcb *rpc_pcb)
+{
+    rpc_pcb->state = pcb->state;
+    rpc_pcb->remote_port = pcb->remote_port;
+    rpc_pcb->local_port = pcb->local_port;
+    rpc_pcb->flags = pcb->flags;
+    rpc_pcb->mss = pcb->mss;
+    rpc_pcb->snd_buf = pcb->snd_buf;
+    rpc_pcb->master_addr = pcb->master_addr;
+    rpc_pcb->client_addr = pcb->client_addr;
+
+    rpc_pcb->local_ipv4 = pcb->local_ip.u_addr.ip4.addr;
+    rpc_pcb->remote_ipv4 = pcb->remote_ip.u_addr.ip4.addr;
+}
 
 int wifi_connect(
     char *ssid,
@@ -876,3 +912,448 @@ void system_event_callback_reg(system_event_cb_t system_event_cb)
     FUNC_EXIT;
 }
 //@}
+
+err_t tcpip_api_call(tcpip_api_call_fn fn, struct tcpip_api_call_data *call)
+{
+    RPC_DEBUG("call");
+    return fn(call);
+}
+
+err_t tcp_connect(struct tcp_pcb *pcb, const ip_addr_t *ipaddr,u16_t port, tcp_connected_fn connected)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t ipaddr_b;
+    binary_t connected_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)connected;
+
+    RPC_DEBUG("pcb:%x,ip:%x,port:%d,func:%x",pcb->client_addr,ipaddr->u_addr.ip4.addr,port,connected);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    ipaddr_b.data = (uint8_t *)ipaddr;
+    ipaddr_b.dataLength = sizeof(ip_addr_t);
+
+    connected_b.data = (uint8_t *)&func_addr;
+    connected_b.dataLength = 4;
+
+    ret = rpc_tcp_connect(&pcb_in_b,&pcb_out_b,&ipaddr_b,port,&connected_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+
+    return ret;
+}
+
+void tcp_recved(struct tcp_pcb *pcb, u16_t len)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x,len:%d",pcb->client_addr,len);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    ret = rpc_tcp_recved(&pcb_in_b,&pcb_out_b,len);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_abort(struct tcp_pcb *pcb)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x",pcb->client_addr);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    ret = rpc_tcp_abort(&pcb_in_b,&pcb_out_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+err_t tcp_write(struct tcp_pcb *pcb, const void *dataptr, u16_t len,u8_t apiflags)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t data_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x,len:%d,flag:%d",pcb->client_addr,len,apiflags);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    data_b.data = (uint8_t *)dataptr;
+    data_b.dataLength = len;
+
+    ret = rpc_tcp_write(&pcb_in_b,&pcb_out_b,&data_b,apiflags);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }    
+
+    return ret;
+}
+
+err_t tcp_output(struct tcp_pcb *pcb)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x",pcb->client_addr);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    ret = rpc_tcp_output(&pcb_in_b,&pcb_out_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+
+    return ret;
+}
+
+err_t tcp_close(struct tcp_pcb *pcb)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x",pcb->client_addr);
+
+    if(pcb != NULL){
+        copy_tp_to_rtp(pcb,&rpc_pcb);
+        pcb_in_b.data = (uint8_t *)&rpc_pcb;
+        pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+        ret = rpc_tcp_close(&pcb_in_b,&pcb_out_b);
+        if(ret == ERR_OK){
+            copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+        }
+
+        if(pcb_out_b.data){
+            erpc_free(pcb_out_b.data);
+        }
+
+        erpc_free(pcb);
+    }
+
+    return ret;
+}
+
+err_t tcp_bind(struct tcp_pcb *pcb, const ip_addr_t *ipaddr,u16_t port)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t ipaddr_b;
+    rpc_tcp_pcb rpc_pcb;
+    uint32_t ipv4_addr;
+    int32_t ret;
+
+    ipv4_addr = ipaddr->u_addr.ip4.addr;
+
+    RPC_DEBUG("pcb:%x,ip:%x,port:%d",pcb->client_addr,ipaddr->u_addr.ip4.addr,port);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    ipaddr_b.data = (uint8_t *)&ipv4_addr;
+    ipaddr_b.dataLength = 4;
+
+    ret = rpc_tcp_bind(&pcb_in_b,&pcb_out_b,&ipaddr_b,port);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+
+    return ret;
+}
+
+struct tcp_pcb * tcp_listen_with_backlog(struct tcp_pcb *pcb, u8_t backlog)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    RPC_DEBUG("in:pcb:%x,back:%d",pcb->client_addr,backlog);
+
+    ret = rpc_tcp_listen_with_backlog(&pcb_in_b,&pcb_out_b,backlog);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    RPC_DEBUG("out:retpcb:%x",pcb->client_addr);
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+    
+    return pcb;
+}
+
+struct tcp_pcb * tcp_new_ip_type (u8_t type)
+{
+    tcp_pcb * pcb = NULL;
+    binary_t pcb_out_b;
+    rpc_tcp_pcb * rpc_pcb;
+    int32_t ret;
+
+    ret = rpc_tcp_new_ip_type(type,&pcb_out_b);
+    if(ret == ERR_OK && pcb_out_b.data != NULL){
+        rpc_pcb = (rpc_tcp_pcb *)pcb_out_b.data;
+        pcb = (tcp_pcb *)erpc_malloc(sizeof(tcp_pcb));
+        memset(pcb,0,sizeof(tcp_pcb));
+        copy_rtp_to_tp(rpc_pcb,pcb);
+        pcb->master_addr = (uint32_t)pcb;
+        pcb->client_addr = rpc_pcb->client_addr;
+    }
+
+    RPC_DEBUG("pcb:%x,type:%d",rpc_pcb->client_addr,type);
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+
+    return pcb;
+}
+
+void tcp_arg(struct tcp_pcb *pcb, void *arg)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    uint32_t arg_addr = (uint32_t)arg;
+    int32_t ret;
+
+    RPC_DEBUG("pcb:%x,arg:%x",pcb->client_addr,arg);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&arg_addr;
+    func_b.dataLength = 4;
+
+    ret = rpc_tcp_arg(&pcb_in_b,&pcb_out_b,&func_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_accept(struct tcp_pcb *pcb, tcp_accept_fn accept)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)accept;
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&func_addr;
+    func_b.dataLength = 4;
+
+    RPC_DEBUG("pcb:%x,func:%x",rpc_pcb.client_addr,accept);
+
+    ret = rpc_tcp_accept(&pcb_in_b,&pcb_out_b,&func_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_err(struct tcp_pcb *pcb, tcp_err_fn err)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)err;
+
+    RPC_DEBUG("pcb:%x,func:%x",pcb->client_addr,err);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&func_addr;
+    func_b.dataLength = 4;
+
+    ret = rpc_tcp_err(&pcb_in_b,&pcb_out_b,&func_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_recv(struct tcp_pcb *pcb, tcp_recv_fn recv)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)recv;
+
+    RPC_DEBUG("pcb:%x,func:%x",pcb->client_addr,recv);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&func_addr;
+    func_b.dataLength = 4;
+
+    ret = rpc_tcp_recv(&pcb_in_b,&pcb_out_b,&func_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_sent(struct tcp_pcb *pcb, tcp_sent_fn sent)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)sent;
+
+    RPC_DEBUG("pcb:%x,func:%x",pcb->client_addr,sent);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&func_addr;
+    func_b.dataLength = 4;
+
+    ret = rpc_tcp_sent(&pcb_in_b,&pcb_out_b,&func_b);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+void tcp_poll(struct tcp_pcb *pcb, tcp_poll_fn poll, u8_t interval)
+{
+    binary_t pcb_out_b;
+    binary_t pcb_in_b;
+    binary_t func_b;
+    rpc_tcp_pcb rpc_pcb;
+    int32_t ret;
+    uint32_t func_addr = (uint32_t)poll;
+
+    RPC_DEBUG("pcb:%x,func:%x,inter:%d",pcb->client_addr,poll,interval);
+
+    copy_tp_to_rtp(pcb,&rpc_pcb);
+    pcb_in_b.data = (uint8_t *)&rpc_pcb;
+    pcb_in_b.dataLength = sizeof(rpc_tcp_pcb);
+
+    func_b.data = (uint8_t *)&func_addr;
+    func_b.dataLength = 4;
+
+    ret = rpc_tcp_poll(&pcb_in_b,&pcb_out_b,&func_b,interval);
+    if(ret == ERR_OK){
+        copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
+    }
+
+    if(pcb_out_b.data){
+        erpc_free(pcb_out_b.data);
+    }
+}
+
+u8_t pbuf_free(struct pbuf *p)
+{
+    binary_t p_b;
+    int32_t addr;
+    int32_t ret = 0;
+
+    RPC_DEBUG("pbuf:%x",p->client_addr);
+
+    if(p != NULL && p->client_addr != 0){
+        addr = p->client_addr;
+        p_b.data = (uint8_t *)&addr;
+        p_b.dataLength = sizeof(int32_t);
+
+        ret = rpc_pbuf_free(&p_b);
+        if(p->payload != NULL){
+            erpc_free(p->payload);
+        }
+        erpc_free(p);
+    }
+    
+    return (u8_t)ret;
+}
