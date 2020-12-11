@@ -80,22 +80,33 @@ int32_t rpc_tcp_recv_fn(uint32_t func, const binary_t * arg, const binary_t * tp
         tpcb_p = (struct tcp_pcb *)rtp->master_addr;
     }
 
-    if(p_data->data != NULL && p_addr->data){
-        pbuf_payload_p = erpc_malloc(sizeof(p_data->dataLength));
-        memcpy(pbuf_payload_p,p_data->data,p_data->dataLength);
-
-        pbuf_p = (struct pbuf *)erpc_malloc(sizeof(pbuf));
-        pbuf_p->next = NULL;
-        pbuf_p->payload = pbuf_payload_p;
-        pbuf_p->tot_len = p_data->dataLength;
-        pbuf_p->len = p_data->dataLength;
-        pbuf_p->master_addr = (uint32_t)pbuf_p;
-        pbuf_p->client_addr = *((uint32_t *)p_addr->data);
+    if(p_data->data && p_addr->data){
+        if(*((uint32_t *)p_addr->data) != NULL){
+            pbuf_payload_p = erpc_malloc(p_data->dataLength);
+            if(pbuf_payload_p != NULL){
+                memcpy(pbuf_payload_p,p_data->data,p_data->dataLength);
+                pbuf_p = (struct pbuf *)erpc_malloc(sizeof(pbuf));
+                if(pbuf_p != NULL){
+               
+                    pbuf_p->next = NULL;
+                    pbuf_p->payload = pbuf_payload_p;
+                    pbuf_p->tot_len = p_data->dataLength;
+                    pbuf_p->len = p_data->dataLength;
+                    pbuf_p->master_addr = (uint32_t)pbuf_p;
+                    pbuf_p->client_addr = *((uint32_t *)p_addr->data);
+                    RPC_DEBUG("func:%x,arg:%x,pcb:%x(%x,%x),pbuf:%d,%x,err:%d",func,arg_p,tpcb_p,tpcb_p->master_addr,tpcb_p->client_addr,pbuf_p->tot_len,pbuf_p->client_addr,err_val);
+                    func_p(arg_p,tpcb_p,pbuf_p,err_val);
+                }else{
+                    // Serial.printf("rpc_tcp_recv_fn pbuf_p malloc failed \r\n");
+                }
+            }else{
+                // Serial.printf("rpc_tcp_recv_fn pbuf_payload_p malloc failed \r\n");
+            }
+        }else{
+            RPC_DEBUG("func:%x,arg:%x,pcb:%x,pbuf null,err:%d",func,arg_p,tpcb_p->client_addr,err_val);
+            func_p(arg_p,tpcb_p,pbuf_p,err_val);
+        }
     }
-
-    RPC_DEBUG("func:%x,arg:%x,pcb:%x,%d,pbuf:%x,err:%d",func,arg_p,tpcb_p->client_addr,pbuf_p->tot_len,pbuf_p->client_addr,err_val);
-
-    func_p(arg_p,tpcb_p,pbuf_p,err_val);
 
     return ERR_OK;
 }
