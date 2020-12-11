@@ -1341,7 +1341,11 @@ u8_t pbuf_free(struct pbuf *p)
     int32_t addr;
     int32_t ret = 0;
 
-    RPC_DEBUG("pbuf:%x",p->client_addr);
+    if(p){
+        RPC_DEBUG("pbuf:%x",p->client_addr);
+    }else{
+        RPC_DEBUG("pbuf null");
+    }
 
     if(p != NULL && p->client_addr != 0){
         addr = p->client_addr;
