@@ -56,6 +56,7 @@ int32_t rpc_tcp_connected_fn(uint32_t func, const binary_t * arg, const binary_t
     if(tpcb->data != NULL){
         struct rpc_tcp_pcb * rtp = (struct rpc_tcp_pcb *)tpcb->data;
         tpcb_p = (struct tcp_pcb *)rtp->master_addr;
+        copy_rtp_to_tp(rtp,tpcb_p);
     }
 
     RPC_DEBUG("func:%x,arg:%x,pcb:%x,err:%d",func,arg_p,tpcb_p->client_addr,err_val);
@@ -78,6 +79,7 @@ int32_t rpc_tcp_recv_fn(uint32_t func, const binary_t * arg, const binary_t * tp
     if(tpcb->data != NULL){
         struct rpc_tcp_pcb * rtp = (struct rpc_tcp_pcb *)tpcb->data;
         tpcb_p = (struct tcp_pcb *)rtp->master_addr;
+        copy_rtp_to_tp(rtp,tpcb_p);
     }
 
     if(p_data->data && p_addr->data){
@@ -136,6 +138,7 @@ int32_t rpc_tcp_sent_fn(uint32_t func, const binary_t * arg, const binary_t * tp
     if(tpcb->data != NULL){
         struct rpc_tcp_pcb * rtp = (struct rpc_tcp_pcb *)tpcb->data;
         tpcb_p = (struct tcp_pcb *)rtp->master_addr;
+        copy_rtp_to_tp(rtp,tpcb_p);
     }
 
     RPC_DEBUG("func:%x,arg:%x,pcb:%x,len:%d",func,arg_p,tpcb_p->client_addr,len);
@@ -156,6 +159,7 @@ int32_t rpc_tcp_poll_fn(uint32_t func, const binary_t * arg, const binary_t * tp
     if(tpcb->data != NULL){
         struct rpc_tcp_pcb * rtp = (struct rpc_tcp_pcb *)tpcb->data;
         tpcb_p = (struct tcp_pcb *)rtp->master_addr;
+        copy_rtp_to_tp(rtp,tpcb_p);
     }
 
     RPC_DEBUG("func:%x,arg:%x,pcb:%x",func,arg_p,tpcb_p->client_addr);
