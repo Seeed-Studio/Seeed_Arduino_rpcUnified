@@ -1063,14 +1063,14 @@ err_t tcp_close(struct tcp_pcb *pcb)
 
         ret = rpc_tcp_close(&pcb_in_b,&pcb_out_b);
         if(ret == ERR_OK){
+            erpc_free(pcb);
+        }else{
             copy_rtp_to_tp((rpc_tcp_pcb *)pcb_out_b.data,pcb);
         }
 
         if(pcb_out_b.data){
             erpc_free(pcb_out_b.data);
         }
-
-        erpc_free(pcb);
     }
 
     return ret;
