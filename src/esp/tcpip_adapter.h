@@ -158,7 +158,7 @@ typedef enum {
 
 /*info of DNS server*/
 typedef struct {
-    ip_addr_t ip;
+    u32_t ipv4;
 } tcpip_adapter_dns_info_t;
 
 /* status of DHCP client or DHCP server */

@@ -563,7 +563,13 @@ int32_t wifi_scan_get_ap_records(uint16_t number, wifi_ap_record_t *_scanResult)
     FUNC_ENTRY;
     int32_t ret = RTW_ERROR;
     binary_t scanResult;
-    if (number > 60 || _scanResult == NULL)
+
+    if (number > SCAN_MAX_NUMBER)
+    {
+        number = SCAN_MAX_NUMBER;
+    }
+
+    if (_scanResult == NULL)
     {
         return RTW_ERROR;
     }
