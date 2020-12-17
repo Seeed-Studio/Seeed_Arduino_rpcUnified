@@ -49,17 +49,10 @@ void copy_rtp_to_tp(struct rpc_tcp_pcb *rpc_pcb,struct tcp_pcb *pcb)
 
 void copy_tp_to_rtp(struct tcp_pcb *pcb,struct rpc_tcp_pcb *rpc_pcb)
 {
-    rpc_pcb->state = pcb->state;
-    rpc_pcb->remote_port = pcb->remote_port;
-    rpc_pcb->local_port = pcb->local_port;
     rpc_pcb->flags = pcb->flags;
-    rpc_pcb->mss = pcb->mss;
-    rpc_pcb->snd_buf = pcb->snd_buf;
+
     rpc_pcb->master_addr = pcb->master_addr;
     rpc_pcb->client_addr = pcb->client_addr;
-
-    rpc_pcb->local_ipv4 = pcb->local_ip.u_addr.ip4.addr;
-    rpc_pcb->remote_ipv4 = pcb->remote_ip.u_addr.ip4.addr;
 }
 
 int wifi_connect(
