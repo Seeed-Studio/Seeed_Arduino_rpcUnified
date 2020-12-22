@@ -291,7 +291,7 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
       if (bytesRead == size)
         break;
     }
-    delay(10);
+    delay(1);
   }
   // Serial.printf("underlyingReceive: size %d\n\rdata:\n\r", size);
   // for(int i = 0; i < bytesRead; i++)
@@ -334,7 +334,7 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
     bytesWritten = m_uartDrv->write(data + offset, bytesWrite);
     remain -= bytesWritten;
     offset += bytesWritten;
-    delay(15);
+    delay(2);
   }
   return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
