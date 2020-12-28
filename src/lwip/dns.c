@@ -82,5 +82,10 @@ err_t dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *addr, dns_foun
     erpc_free(data);
     data = NULL;
   }
+  if(b_addr.data != NULL)
+  {
+    erpc_free(b_addr.data);
+    b_addr.data = NULL;
+  }
   FUNC_EXIT_RC((int8_t)ret);
 }
