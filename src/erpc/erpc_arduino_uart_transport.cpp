@@ -296,7 +296,7 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
   {
     const uint32_t sendSize = min(size - sentSize, 32);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
-    if (sentSize < size) delay(2);
+    delay(4);
   }
   return kErpcStatus_Success; // return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
