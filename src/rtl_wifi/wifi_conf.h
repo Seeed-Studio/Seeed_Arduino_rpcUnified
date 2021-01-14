@@ -61,7 +61,7 @@
     #define RTW_API_INFO(args)
 #endif
 
-#define MAC_ARG(x) ((u8*)(x))[0],((u8*)(x))[1],((u8*)(x))[2],((u8*)(x))[3],((u8*)(x))[4],((u8*)(x))[5]
+#define MAC_ARG(x) ((uint8_t*)(x))[0],((uint8_t*)(x))[1],((uint8_t*)(x))[2],((uint8_t*)(x))[3],((uint8_t*)(x))[4],((uint8_t*)(x))[5]
 #define CMP_MAC( a, b )  (((a[0])==(b[0]))&& \
                           ((a[1])==(b[1]))&& \
                           ((a[2])==(b[2]))&& \
@@ -955,7 +955,7 @@ int wifi_remove_packet_filter(unsigned char filter_id);
   * @return  None.
   * @note  Please invoke this function as "wifi_filter_by_ap_and_phone_mac(0,NULL,NULL)" before exiting promisc mode if you enabled it during the promisc mode.
   */
-void wifi_filter_by_ap_and_phone_mac(u8 enable, void *ap_mac, void *phone_mac);
+void wifi_filter_by_ap_and_phone_mac(uint8_t enable, void *ap_mac, void *phone_mac);
 #endif
 
 /**
@@ -1044,7 +1044,7 @@ void wifi_set_ap_polling_sta(__u8 enabled);
  * @param[in]  len : length of mailbox data
  * @return  0 if success, otherwise return -1
  */
-int mailbox_to_wifi(u8 *data, u8 len);
+int mailbox_to_wifi(uint8_t *data, uint8_t len);
 #else
 #define mailbox_to_wifi(data, len)
 #endif

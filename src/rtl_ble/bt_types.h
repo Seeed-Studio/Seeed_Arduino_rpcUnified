@@ -481,8 +481,8 @@ extern "C" {
     }
 
 /** Little Endian stream to uint8 */
-#define LE_STREAM_TO_UINT8(u8, s)   {                   \
-        u8  = (uint8_t)(*s);                            \
+#define LE_STREAM_TO_UINT8(uint8_t, s)   {                   \
+        uint8_t  = (uint8_t)(*s);                            \
         s  += 1;                                        \
     }
 
@@ -511,8 +511,8 @@ extern "C" {
     }
 
 /** Little Endian uint8 to stream */
-#define LE_UINT8_TO_STREAM(s, u8)   {                   \
-        *s++ = (uint8_t)(u8);                           \
+#define LE_UINT8_TO_STREAM(s, uint8_t)   {                   \
+        *s++ = (uint8_t)(uint8_t);                           \
     }
 
 /** Little Endian uint16 to stream */
@@ -537,8 +537,8 @@ extern "C" {
     }
 
 /** Little Endian array to uint8 */
-#define LE_ARRAY_TO_UINT8(u8, a)    {                   \
-        u8  = (uint8_t)(*(a + 0));                      \
+#define LE_ARRAY_TO_UINT8(uint8_t, a)    {                   \
+        uint8_t  = (uint8_t)(*(a + 0));                      \
     }
 
 /** Little Endian array to uint16 */
@@ -563,8 +563,8 @@ extern "C" {
     }
 
 /** Little Endian uint8 to array */
-#define LE_UINT8_TO_ARRAY(a, u8)    {                   \
-        *((uint8_t *)(a) + 0) = (uint8_t)(u8);          \
+#define LE_UINT8_TO_ARRAY(a, uint8_t)    {                   \
+        *((uint8_t *)(a) + 0) = (uint8_t)(uint8_t);          \
     }
 
 /** Little Endian uint16 to array */
@@ -589,8 +589,8 @@ extern "C" {
     }
 
 /** Big Endian stream to uint8 */
-#define BE_STREAM_TO_UINT8(u8, s)   {                   \
-        u8   = (uint8_t)(*(s + 0));                     \
+#define BE_STREAM_TO_UINT8(uint8_t, s)   {                   \
+        uint8_t   = (uint8_t)(*(s + 0));                     \
         s   += 1;                                       \
     }
 
@@ -619,8 +619,8 @@ extern "C" {
     }
 
 /** Big Endian uint8 to stream */
-#define BE_UINT8_TO_STREAM(s, u8)   {                   \
-        *s++ = (uint8_t)(u8);                           \
+#define BE_UINT8_TO_STREAM(s, uint8_t)   {                   \
+        *s++ = (uint8_t)(uint8_t);                           \
     }
 
 /** Big Endian uint16 to stream */
@@ -645,8 +645,8 @@ extern "C" {
     }
 
 /** Big Endian array to uint8 */
-#define BE_ARRAY_TO_UINT8(u8, a)    {                   \
-        u8  = (uint8_t)(*(a + 0));                      \
+#define BE_ARRAY_TO_UINT8(uint8_t, a)    {                   \
+        uint8_t  = (uint8_t)(*(a + 0));                      \
     }
 
 /** Big Endian array to uint16 */
@@ -671,8 +671,8 @@ extern "C" {
     }
 
 /** Big Endian uint8 to array */
-#define BE_UINT8_TO_ARRAY(a, u8)    {                   \
-        *((uint8_t *)(a) + 0) = (uint8_t)(u8);          \
+#define BE_UINT8_TO_ARRAY(a, uint8_t)    {                   \
+        *((uint8_t *)(a) + 0) = (uint8_t)(uint8_t);          \
     }
 
 /** Big Endian uint16 to array */

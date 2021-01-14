@@ -16,13 +16,14 @@
 #define ESP_EVENT_H_
 
 #include "esp_err.h"
-#include "Seeed_Arduino_FreeRTOS.h"
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "esp_err.h"
 #include "esp_wifi_types.h"
 #include "tcpip_adapter.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
