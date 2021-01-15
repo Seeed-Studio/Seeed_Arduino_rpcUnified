@@ -106,7 +106,6 @@ void erpc_init()
 void _wrap_body()
 {
     RTL8720_RESET();
-    
     erpc_init();
 
     vTaskStartScheduler();

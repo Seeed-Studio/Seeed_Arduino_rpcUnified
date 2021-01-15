@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 
-erpc_transport_t  erpc_transport_uart_init(HardwareSerial *port, unsigned long baudrate = 115200);
+erpc_transport_t  erpc_transport_uart_init(EUart *port, unsigned long baudrate = 115200);
 
 void erpc_transport_uart_deinit(void);
 

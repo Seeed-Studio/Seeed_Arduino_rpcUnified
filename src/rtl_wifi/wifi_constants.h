@@ -35,10 +35,8 @@ extern "C" {
 
 #ifdef SEEED_XIAO_M0
 #define SCAN_MAX_NUMBER 10
-#elif SEEED_WIO_TERMINAL
-#define SCAN_MAX_NUMBER 60
 #else
-#error "BOARD_TYPE ERROR"
+#define SCAN_MAX_NUMBER 60
 #endif
 
 #ifndef WLAN0_NAME

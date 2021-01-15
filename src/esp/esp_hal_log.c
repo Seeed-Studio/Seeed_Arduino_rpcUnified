@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "esp_hal_log.h"
 #include "FreeRTOS.h"
+#include "task.h"
 
 //used by hal log
 const char * pathToFileName(const char * path)

@@ -1,8 +1,6 @@
 #ifndef PRC_UNIFIED_CONFIG_H
 #define PRC_UNIFIED_CONFIG_H
 
-#ifdef WIO_TERMINAL
-
 #define RPC_BUFFER_SIZE 4096
 #define RPC_BAUD 1843200
 #define RPC_SERVER_STACK_SIZE 8192
@@ -42,6 +40,7 @@ UartTransport g_transport(&rpc_uart, RPC_BAUD);
 #define RTL8720_RESET()                       \
     do                                        \
     {                                         \
+        SerialUSB.begin(115200);              \
         pinMode(RTL8720D_CHIP_PU, OUTPUT);    \
         digitalWrite(RTL8720D_CHIP_PU, LOW);  \
         delay(100);                           \
@@ -49,10 +48,23 @@ UartTransport g_transport(&rpc_uart, RPC_BAUD);
         delay(100);                           \
     } while (0)
 
-#else
+#include <stdio.h>
+extern "C"
+{
+    void rpc_printf(const char *format, ...)
+    {
+        char print_buf[512] = {0};
 
-#error "This board does not yet support!"
+        va_list args;
+        va_start(args, format);
+        int r = vsnprintf(print_buf, sizeof(print_buf), format, args);
+        va_end(args);
 
-#endif
+        if (r > 0)
+        {
+            SerialUSB.write(print_buf);
+        }
+    }
+}
 
 #endif

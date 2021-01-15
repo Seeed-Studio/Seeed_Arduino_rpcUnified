@@ -8,6 +8,8 @@
 
 #ifdef WIO_TERMINAL
 #include "../../board/wio_terminal/erpc_arduino_uart_transport.h"
+#elif defined(SEEEDUINO_H7AI)
+#include "../../board/seeeduino_h7ai/erpc_arduino_uart_transport.h"
 #endif
 
 #endif // _EMBEDDED_RPC__ARDUINO_UART_TRANSPORT_H_
