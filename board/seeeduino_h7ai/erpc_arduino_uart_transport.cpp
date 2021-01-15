@@ -51,7 +51,7 @@ void EUart::_rx_complete_irq(serial_t *obj)
 
   if (uart_getc(obj, &c) == 0) {
 
-    rx_buffer_index_t i = (unsigned int)(obj->rx_head + 1) % SERIAL_RX_BUFFER_SIZE;
+    rx_buffer_index_t i = (unsigned int)(obj->rx_head + 1) % 4096;
 
     // if we should be storing the received character into the location
     // just before the tail (meaning that the head would advance to the
@@ -70,7 +70,7 @@ int EUart::_tx_complete_irq(serial_t *obj)
 {
   // If interrupts are enabled, there must be more data in the output
   // buffer. Send the next byte
-  obj->tx_tail = (obj->tx_tail + 1) % SERIAL_TX_BUFFER_SIZE;
+  obj->tx_tail = (obj->tx_tail + 1) % 256;
 
   if (obj->tx_head == obj->tx_tail) {
     return -1;
@@ -142,6 +142,18 @@ void EUart::begin(unsigned long baud, byte config)
 
   uart_init(&_serial, (uint32_t)baud, databits, parity, stopbits);
   uart_attach_rx_callback(&_serial, _rx_complete_irq);
+  if (HAL_UARTEx_SetTxFifoThreshold(&(_serial.handle), UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&(_serial.handle), UART_RXFIFO_THRESHOLD_8_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_EnableFifoMode(&(_serial.handle)) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 void EUart::end()
@@ -157,7 +169,7 @@ void EUart::end()
 
 int EUart::available(void)
 {
-  return ((unsigned int)(SERIAL_RX_BUFFER_SIZE + _serial.rx_head - _serial.rx_tail)) % SERIAL_RX_BUFFER_SIZE;
+  return ((unsigned int)(4096 + _serial.rx_head - _serial.rx_tail)) % 4096;
 }
 
 int EUart::peek(void)
@@ -176,7 +188,7 @@ int EUart::read(void)
     return -1;
   } else {
     unsigned char c = _serial.rx_buff[_serial.rx_tail];
-    _serial.rx_tail = (rx_buffer_index_t)(_serial.rx_tail + 1) % SERIAL_RX_BUFFER_SIZE;
+    _serial.rx_tail = (rx_buffer_index_t)(_serial.rx_tail + 1) % 4096;
     return c;
   }
 }
@@ -187,7 +199,7 @@ int EUart::availableForWrite(void)
   tx_buffer_index_t tail = _serial.tx_tail;
 
   if (head >= tail) {
-    return SERIAL_TX_BUFFER_SIZE - 1 - head + tail;
+    return 256 - 1 - head + tail;
   }
   return tail - head - 1;
 }
@@ -212,7 +224,7 @@ size_t EUart::write(uint8_t c)
 {
   _written = true;
 
-  tx_buffer_index_t i = (_serial.tx_head + 1) % SERIAL_TX_BUFFER_SIZE;
+  tx_buffer_index_t i = (_serial.tx_head + 1) % 256;
 
   // If the output buffer is full, there's nothing for it other than to
   // wait for the interrupt handler to empty it a bit
@@ -256,22 +268,14 @@ erpc_status_t UartTransport::init(void)
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
   uint32_t bytesRead = 0;
-  printf("underlyingReceive: %d\n\r", size);
   while (bytesRead < size)
   {
-    printf("bytesRead: %d\n\r", bytesRead);
     while (!m_uartDrv->available()) delay(1);
 
     const int c = m_uartDrv->read();
     if (c < 0) continue;
     data[bytesRead++] = static_cast<uint8_t>(c);
   }
-  for(int i = 0; i < size; i++)
-  {
-    printf("%02X ", data[i]);
-  }
-
-  printf("\n\runderlyingReceive end\n\r");
   return kErpcStatus_Success; // return size != bytesRead ? kErpcStatus_ReceiveFailed : kErpcStatus_Success;
 }
 
