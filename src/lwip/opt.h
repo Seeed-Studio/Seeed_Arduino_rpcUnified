@@ -49,6 +49,7 @@
     will be set to standard values. Override anything you don't like!
 */
 #include "lwipopts.h"
+#include "lwip/debug.h"
 
 /**
     @defgroup lwip_opts Options (lwipopts.h)
