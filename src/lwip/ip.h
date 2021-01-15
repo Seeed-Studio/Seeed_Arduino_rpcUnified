@@ -46,7 +46,7 @@
 // #include "lwip/netif.h"
 // #include "lwip/ip4.h"
 // #include "lwip/ip6.h"
-// #include "lwip/prot/ip.h"
+#include "lwip/prot/ip.h"
 
 #ifdef __cplusplus
 extern "C" {
