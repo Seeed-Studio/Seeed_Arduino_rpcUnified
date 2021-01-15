@@ -5,7 +5,7 @@
  */
 
 #include <rpcWiFi.h>
-#include <ESP32Ping.h>
+#include <rpc_ping.h>
 const char *ssid = "ssid";
 const char *password = "password";
 const char *host = "www.google.com";
