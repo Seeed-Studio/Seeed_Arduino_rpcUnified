@@ -24,7 +24,7 @@
 #include <WiFi.h>
 
 //extern "C" {
-#include <ping.h>
+#include "ping.h"
 //}
 
 #ifdef ENABLE_DEBUG_PING
