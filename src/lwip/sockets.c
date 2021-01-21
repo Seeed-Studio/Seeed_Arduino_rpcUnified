@@ -108,6 +108,7 @@ int lwip_recv(int s, void *mem, size_t len, int flags)
     FUNC_ENTRY;
     binary_t b_mem;
     int ret = rpc_lwip_recv(s, &b_mem, len, flags, len*10);
+	rpc_printf("recvfrom  %d %d %d\r\n",  ret ,flags,len); 
     if (ret > 0)
     {
         memcpy(mem, b_mem.data, b_mem.dataLength);
@@ -141,6 +142,7 @@ int lwip_recvfrom(int s, void *mem, size_t len, int flags,struct sockaddr *from,
     binary_t b_from;
     
     int ret = rpc_lwip_recvfrom(s, &b_mem, len, flags, &b_from, fromlen, len * 10);
+	rpc_printf("recvfrom  %d %d %d\r\n",  ret ,flags,s); 
     if (ret > 0)
     {
         memcpy(mem, b_mem.data, b_mem.dataLength);

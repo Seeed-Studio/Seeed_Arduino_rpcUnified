@@ -62,8 +62,8 @@ typedef uint32_t sys_thread_t;
  * '0' if waiting again and
  * '1' if now there should be something to do (used for asserting)
  */
-typedef int (*test_sys_arch_waiting_fn)(sys_sem_t* wait_sem, sys_mbox_t* wait_mbox);
-void test_sys_arch_wait_callback(test_sys_arch_waiting_fn waiting_fn);
+//typedef int (*test_sys_arch_waiting_fn)(sys_sem_t* wait_sem, sys_mbox_t* wait_mbox);
+//void test_sys_arch_wait_callback(test_sys_arch_waiting_fn waiting_fn);
 
 /* current time */
 extern uint32_t lwip_sys_now;
