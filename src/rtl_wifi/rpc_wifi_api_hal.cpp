@@ -10,7 +10,9 @@
 #include "lwip/err.h"
 #include "lwip/tcp.h"
 #include "lwip/priv/tcpip_priv.h"
-
+#include "lwip/ip4_addr.h"
+#include "lwip/inet_chksum.h"
+#include "lwip/mem.h"
 int wifi_mode = RTW_MODE_NONE;
 
 uint32_t wifi_get_netif(tcpip_adapter_if_t tcpip_if)
@@ -1385,4 +1387,42 @@ u8_t pbuf_free(struct pbuf *p)
     }
     
     return (u8_t)ret;
+}
+
+char * ip4addr_ntoa(const ip4_addr_t *ip4_addr)
+{
+    binary_t ip4_addr_in_b;
+    int32_t rpc_ip4_addr;
+    char* ret;
+    RPC_DEBUG("ip4:%x",ip4_addr->addr);
+
+    rpc_ip4_addr = ip4_addr->addr;
+    ip4_addr_in_b.data = (uint8_t *)&rpc_ip4_addr;
+    ip4_addr_in_b.dataLength = sizeof(rpc_ip4_addr);
+
+    ret = rpc_ip4addr_ntoa(&ip4_addr_in_b);
+	rpc_printf(ret);
+	
+	return ret;
+}
+u16_t inet_chksum(const void *dataptr, u16_t len)
+{
+    binary_t dataptr_in;
+    u16_t ret;
+
+    RPC_DEBUG("inet_chksum:%x",dataptr);
+
+    dataptr_in.data = (uint8_t *)dataptr;
+    dataptr_in.dataLength = len;
+    ret = rpc_inet_chksum(&dataptr_in);
+	
+	return ret;
+}
+void *
+mem_malloc(mem_size_t size){
+	return erpc_malloc(size);
+}
+void 
+mem_free(void *rmem){
+	erpc_free(rmem);
 }
