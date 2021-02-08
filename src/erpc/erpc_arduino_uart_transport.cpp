@@ -294,7 +294,7 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
   uint32_t sentSize = 0;
   while (sentSize < size)
   {
-    const uint32_t sendSize = min(size - sentSize, 32);
+    const uint32_t sendSize = min(size - sentSize, 256);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
     if (sentSize < size) delay(2);
   }
