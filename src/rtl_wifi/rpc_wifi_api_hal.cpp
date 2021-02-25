@@ -1401,7 +1401,7 @@ char * ip4addr_ntoa(const ip4_addr_t *ip4_addr)
     ip4_addr_in_b.dataLength = sizeof(rpc_ip4_addr);
 
     ret = rpc_ip4addr_ntoa(&ip4_addr_in_b);
-	rpc_printf(ret);
+	// rpc_printf(ret);
 	
 	return ret;
 }
