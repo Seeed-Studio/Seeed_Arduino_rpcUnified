@@ -15,13 +15,15 @@
 
 using namespace erpc;
 
+#include "rpc_unified_config.h"
+
 class MyMessageBufferFactory : public MessageBufferFactory
 {
 public:
     virtual MessageBuffer create()
     {
-        uint8_t *buf = new uint8_t[4096];
-        return MessageBuffer(buf, 4096);
+        uint8_t *buf = new uint8_t[RPC_BUFFER_SIZE];
+        return MessageBuffer(buf, RPC_BUFFER_SIZE);
     }
 
     virtual void dispose(MessageBuffer *buf)
@@ -32,37 +34,8 @@ public:
         }
     }
 };
-//#define ble_uart Serial1
-#define PIN_BLE_SERIAL_X_RX (84ul)
-#define PIN_BLE_SERIAL_X_TX (85ul)
-#define PAD_BLE_SERIAL_X_RX (SERCOM_RX_PAD_2)
-#define PAD_BLE_SERIAL_X_TX (UART_TX_PAD_0)
-#define SERCOM_BLE_SERIAL_X sercom0
-#define INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(uart) \
-    void SERCOM0_0_Handler()                           \
-    {                                                  \
-        (uart).IrqHandler();                           \
-    }                                                  \
-    void SERCOM0_1_Handler()                           \
-    {                                                  \
-        (uart).IrqHandler();                           \
-    }                                                  \
-    void SERCOM0_2_Handler()                           \
-    {                                                  \
-        (uart).IrqHandler();                           \
-    }                                                  \
-    void SERCOM0_3_Handler()                           \
-    {                                                  \
-        (uart).IrqHandler();                           \
-    }
 
-EUart ble_uart(&SERCOM_BLE_SERIAL_X, PIN_BLE_SERIAL_X_RX, PIN_BLE_SERIAL_X_TX, PAD_BLE_SERIAL_X_RX, PAD_BLE_SERIAL_X_TX);
-extern "C"
-{
-    INTERRUPT_HANDLER_IMPLEMENT_BLE_SERIAL_X(ble_uart)
-}
 
-UartTransport g_transport(&ble_uart, 614400);
 MyMessageBufferFactory g_msgFactory;
 BasicCodecFactory g_basicCodecFactory;
 ArbitratedClientManager *g_client;
@@ -101,16 +74,11 @@ void runServer(void *arg)
     }
 }
 
-Thread serverThread(&runServer, configMAX_PRIORITIES, 8192, "runServer");
-Thread clientThread(&runClient, configMAX_PRIORITIES - 2, 20480, "runClient");
+Thread serverThread(&runServer, configMAX_PRIORITIES, RPC_SERVER_STACK_SIZE, "runServer");
+Thread clientThread(&runClient, configMAX_PRIORITIES - 2, RPC_CLIENT_STACK_SIZE, "runClient");
 
 void erpc_init()
 {
-    pinMode(RTL8720D_CHIP_PU, OUTPUT);
-    digitalWrite(RTL8720D_CHIP_PU, LOW);
-    delay(100);
-    digitalWrite(RTL8720D_CHIP_PU, HIGH);
-    delay(100);
     g_transport.init();
     g_arbitrator.setSharedTransport(&g_transport);
     g_arbitrator.setCodec(g_basicCodecFactory.create());
@@ -137,8 +105,7 @@ void erpc_init()
 
 void _wrap_body()
 {
-    Serial.begin(115200);
-
+    RTL8720_RESET();
     erpc_init();
 
     vTaskStartScheduler();
