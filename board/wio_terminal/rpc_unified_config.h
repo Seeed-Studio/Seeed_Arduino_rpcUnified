@@ -2,7 +2,7 @@
 #define PRC_UNIFIED_CONFIG_H
 
 #define RPC_BUFFER_SIZE 4096
-#define RPC_BAUD 1843200
+#define RPC_BAUD 614400
 #define RPC_SERVER_STACK_SIZE 8192
 #define RPC_CLIENT_STACK_SIZE 20480
 
@@ -40,7 +40,7 @@ UartTransport g_transport(&rpc_uart, RPC_BAUD);
 #define RTL8720_RESET()                       \
     do                                        \
     {                                         \
-        SerialUSB.begin(115200);              \
+        Serial.begin(115200);              \
         pinMode(RTL8720D_CHIP_PU, OUTPUT);    \
         digitalWrite(RTL8720D_CHIP_PU, LOW);  \
         delay(100);                           \
@@ -62,7 +62,7 @@ extern "C"
 
         if (r > 0)
         {
-            SerialUSB.write(print_buf);
+            Serial.write(print_buf);
         }
     }
 }

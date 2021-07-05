@@ -259,7 +259,7 @@ SercomParityMode EUart::extractParity(uint16_t config)
 // Code
 ////////////////////////////////////////////////////////////////////////////////
 
-UartTransport::UartTransport(HardwareSerial *uartDrv, unsigned long baudrate)
+UartTransport::UartTransport(EUart *uartDrv, unsigned long baudrate)
     : m_uartDrv(uartDrv), m_baudrate(baudrate)
 {
 }

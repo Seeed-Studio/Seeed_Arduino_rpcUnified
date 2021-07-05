@@ -37,6 +37,8 @@ extern "C" {
 #define SCAN_MAX_NUMBER 10
 #elif SEEED_WIO_TERMINAL
 #define SCAN_MAX_NUMBER 60
+#elif WIO_LITE_AI
+#define SCAN_MAX_NUMBER 60
 #else
 #error "BOARD_TYPE ERROR"
 #endif

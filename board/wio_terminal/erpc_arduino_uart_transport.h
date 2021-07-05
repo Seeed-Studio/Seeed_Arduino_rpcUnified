@@ -70,7 +70,7 @@ public:
      *
      * @param[in] uartDrv Cmsis EUart.
      */
-    UartTransport(HardwareSerial *uartDrv, unsigned long baudrate);
+    UartTransport(EUart *uartDrv, unsigned long baudrate);
 
     /*!
      * @brief Destructor.
@@ -89,7 +89,7 @@ public:
     virtual bool hasMessage(void);
 
 protected:
-    HardwareSerial *m_uartDrv; /*!< Access structure of the USART Driver */
+    EUart *m_uartDrv; /*!< Access structure of the USART Driver */
     unsigned long m_baudrate;  /*!< EUart baud rate*/
 
 private:

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Classes
 ////////////////////////////////////////////////////////////////////////////////
+#define RPC_UART_TX_BUFFER_SIZE 4096
 
 namespace erpc {
 
@@ -20,7 +21,7 @@ class EUart : public Stream {
     // Don't put any members after these buffers, since only the first
     // 32 bytes of this struct can be accessed quickly using the ldd
     // instruction.
-    unsigned char _rx_buffer[4096];
+    unsigned char _rx_buffer[RPC_UART_TX_BUFFER_SIZE];
     unsigned char _tx_buffer[256];
 
     serial_t _serial;
@@ -56,6 +57,7 @@ class EUart : public Stream {
     {
       return write((uint8_t)n);
     }
+    size_t write(const uint8_t *buffer, size_t size);
     using Print::write; // pull in write(str) and write(buf, size) from Print
     operator bool()
     {
