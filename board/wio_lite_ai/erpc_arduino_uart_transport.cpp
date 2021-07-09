@@ -37,7 +37,7 @@ void EUart::init(PinName _rx, PinName _tx)
   _serial.rx_buff = _rx_buffer;
   _serial.rx_head = 0;
   _serial.rx_tail = 0;
-  _serial.tx_buff = _tx_buffer;
+  _serial.tx_buff = NULL;
   _serial.tx_head = 0;
   _serial.tx_tail = 0;
 }
@@ -51,7 +51,7 @@ void EUart::_rx_complete_irq(serial_t *obj)
 
   if (uart_getc(obj, &c) == 0) {
 
-    rx_buffer_index_t i = (unsigned int)(obj->rx_head + 1) % RPC_UART_TX_BUFFER_SIZE;
+    uint32_t i = (unsigned int)(obj->rx_head + 1) % RPC_UART_RX_BUFFER_SIZE;
 
     // if we should be storing the received character into the location
     // just before the tail (meaning that the head would advance to the
@@ -62,21 +62,6 @@ void EUart::_rx_complete_irq(serial_t *obj)
       obj->rx_head = i;
     }
   }
-}
-
-// Actual interrupt handlers //////////////////////////////////////////////////////////////
-
-int EUart::_tx_complete_irq(serial_t *obj)
-{
-  // If interrupts are enabled, there must be more data in the output
-  // buffer. Send the next byte
-  obj->tx_tail = (obj->tx_tail + 1) % 256;
-
-  if (obj->tx_head == obj->tx_tail) {
-    return -1;
-  }
-
-  return 0;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -142,6 +127,7 @@ void EUart::begin(unsigned long baud, byte config)
 
   uart_init(&_serial, (uint32_t)baud, databits, parity, stopbits);
   uart_attach_rx_callback(&_serial, _rx_complete_irq);
+
   if (HAL_UARTEx_SetTxFifoThreshold(&(_serial.handle), UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
   {
     Error_Handler();
@@ -154,6 +140,7 @@ void EUart::begin(unsigned long baud, byte config)
   {
     Error_Handler();
   }
+
 }
 
 void EUart::end()
@@ -169,7 +156,7 @@ void EUart::end()
 
 int EUart::available(void)
 {
-  return ((unsigned int)(RPC_UART_TX_BUFFER_SIZE + _serial.rx_head - _serial.rx_tail)) % RPC_UART_TX_BUFFER_SIZE;
+  return ((unsigned int)(RPC_UART_RX_BUFFER_SIZE + _serial.rx_head - _serial.rx_tail)) % RPC_UART_RX_BUFFER_SIZE;
 }
 
 int EUart::peek(void)
@@ -188,93 +175,18 @@ int EUart::read(void)
     return -1;
   } else {
     unsigned char c = _serial.rx_buff[_serial.rx_tail];
-    _serial.rx_tail = (rx_buffer_index_t)(_serial.rx_tail + 1) % RPC_UART_TX_BUFFER_SIZE;
+    _serial.rx_tail = (uint32_t)(_serial.rx_tail + 1) % RPC_UART_RX_BUFFER_SIZE;
     return c;
   }
 }
 
-int EUart::availableForWrite(void)
-{
-  tx_buffer_index_t head = _serial.tx_head;
-  tx_buffer_index_t tail = _serial.tx_tail;
-
-  if (head >= tail) {
-    return 256 - 1 - head + tail;
-  }
-  return tail - head - 1;
-}
-
 void EUart::flush()
 {
-  // If we have never written a byte, no need to flush. This special
-  // case is needed since there is no way to force the TXC (transmit
-  // complete) bit to 1 during initialization
-  if (!_written) {
-    return;
-  }
-
-  while ((_serial.tx_head != _serial.tx_tail)) {
-    // nop, the interrupt handler will free up space for us
-  }
-  // If we get here, nothing is queued anymore (DRIE is disabled) and
-  // the hardware finished tranmission (TXC is set).
 }
 
 size_t EUart::write(const uint8_t *buffer, size_t size)
 {
-  tx_buffer_index_t i;
-  size_t size_tmp;
-  size_t ret = size;
-
-  _written = true;
-
-  // If necessary split transfert till end of TX buffer
-  while (_serial.tx_head + size > RPC_UART_TX_BUFFER_SIZE) {
-    size_t size_intermediate = RPC_UART_TX_BUFFER_SIZE - _serial.tx_head;
-
-    write(buffer, size_intermediate);
-    size -= size_intermediate;
-    buffer += size_intermediate;
-  }
-
-  // Here size if less or equal to RPC_UART_TX_BUFFER_SIZE, but RPC_UART_TX_BUFFER_SIZE is not possible as tx_head = tx_tail is ambiguous empty or full
-  if (size == RPC_UART_TX_BUFFER_SIZE) {
-    size_t size_intermediate = RPC_UART_TX_BUFFER_SIZE - 1;
-
-    write(buffer, size_intermediate);
-    size -= size_intermediate;
-    buffer += size_intermediate;
-  }
-
-  size_tmp = size;
-
-  while (size_tmp) {
-    i = (_serial.tx_head + 1) % RPC_UART_TX_BUFFER_SIZE;
-
-
-    // If the output buffer is full, there's nothing for it other than to
-    // wait for the interrupt handler to empty it a bit
-    while (i == _serial.tx_tail) {
-      // nop, the interrupt handler will free up space for us
-    }
-    _serial.tx_buff[_serial.tx_head] = *buffer;
-    _serial.tx_head = i;
-    size_tmp --;
-    buffer ++;
-  }
-
-  while ((_serial.tx_head != (_serial.tx_tail + size) % RPC_UART_TX_BUFFER_SIZE)) {
-    // nop, previous transfert no yet completed
-  }
-
-  _serial.tx_size = size;
-
-  if (!serial_tx_active(&_serial)) {
-    uart_attach_tx_callback(&_serial, _tx_complete_irq, size);
-  }
-
-  /* There is no real error management so just return transfer size requested*/
-  return ret;
+  return uart_write(&_serial, (uint8_t *)buffer, size);
 }
 
 size_t EUart::write(uint8_t c)
@@ -325,7 +237,7 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
   uint32_t sentSize = 0;
   while (sentSize < size)
   {
-    const uint32_t sendSize = min(size - sentSize, 32);
+    const uint32_t sendSize =min(size - sentSize, 32);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
     delay(4);
   }
