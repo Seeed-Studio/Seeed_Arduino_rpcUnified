@@ -29,10 +29,29 @@ namespace erpc {
 #include "HardwareSerial.h"
 #include "SERCOM.h"
 #include "RingBuffer.h"
+#include "erpc_threading.h"
 
 #include <cstddef>
 
-class EUart : public HardwareSerial
+class HardwareSerialEx : public HardwareSerial
+{
+  public:
+    virtual void begin(unsigned long) {}
+    virtual void begin(unsigned long, uint16_t) {}
+    virtual void end() {}
+    virtual int available(void) = 0;
+    virtual int peek(void) = 0;
+    virtual int read(void) = 0;
+    virtual void flush(void) = 0;
+    virtual size_t write(uint8_t) = 0;
+    using Print::write; // pull in write(str) and write(buf, size) from Print
+    virtual operator bool() = 0;
+
+    virtual void waitForRead() = 0;
+    virtual void waitForWrite(size_t) = 0;
+};
+
+class EUart : public HardwareSerialEx
 {
   public:
     EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX);
@@ -52,6 +71,9 @@ class EUart : public HardwareSerial
 
     operator bool() { return true; }
 
+    virtual void waitForRead() override;
+    virtual void waitForWrite(size_t n) override;
+
   private:
     SERCOM *sercom;
     RingBufferN<4096> rxBuffer;
@@ -66,6 +88,11 @@ class EUart : public HardwareSerial
     volatile uint32_t* pul_outclrRTS;
     uint32_t ul_pinMaskRTS;
     uint8_t uc_pinCTS;
+
+    volatile bool is_waiting_for_read;
+    Semaphore sem_read;
+    volatile size_t request_size;
+    Semaphore sem_write;
 
     SercomNumberStopBit extractNbStopBit(uint16_t config);
     SercomUartCharSize extractCharSize(uint16_t config);
@@ -85,7 +112,7 @@ public:
      *
      * @param[in] uartDrv Cmsis EUart.
      */
-    UartTransport(HardwareSerial *uartDrv, unsigned long baudrate);
+    UartTransport(HardwareSerialEx *uartDrv, unsigned long baudrate);
 
     /*!
      * @brief Destructor.
@@ -103,8 +130,10 @@ public:
 
     virtual bool hasMessage(void);
 
+    virtual void waitMessage(void) override;
+
 protected:
-    HardwareSerial *m_uartDrv; /*!< Access structure of the USART Driver */
+    HardwareSerialEx *m_uartDrv; /*!< Access structure of the USART Driver */
     unsigned long m_baudrate;  /*!< EUart baud rate*/
 
 private:

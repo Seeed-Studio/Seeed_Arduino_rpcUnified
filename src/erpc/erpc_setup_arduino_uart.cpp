@@ -21,7 +21,7 @@ static ManuallyConstructed<UartTransport> s_transport;
 ////////////////////////////////////////////////////////////////////////////////
 // Code
 ////////////////////////////////////////////////////////////////////////////////
-erpc_transport_t erpc_transport_uart_init(HardwareSerial *port, unsigned long baudrate)
+erpc_transport_t erpc_transport_uart_init(HardwareSerialEx *port, unsigned long baudrate)
 {
     s_transport.construct(port, baudrate);
     if (s_transport->init() == kErpcStatus_Success)

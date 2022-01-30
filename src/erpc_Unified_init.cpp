@@ -96,8 +96,10 @@ void runServer(void *arg)
     /* run server */
     while (true)
     {
-        g_server.poll();
-        delay(20);
+        if (g_server.poll() != kErpcStatus_Success) 
+        {
+            delay(20);
+        }
     }
 }
 
