@@ -299,7 +299,7 @@ void EUart::waitForWrite(size_t n)
   }
   request_size = n - avail;
   interrupts();
-  DBG_PRINTF("%d, %d, %d, %d\n", n, avail, request_size, x);
+  //DBG_PRINTF("%d, %d, %d, %d\n", n, avail, request_size, x);
   sem_write.get(Semaphore::kWaitForever);
 }
 
@@ -330,7 +330,7 @@ erpc_status_t UartTransport::init(void)
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
   uint32_t bytesRead = 0;
-  DBG_PRINTF("write %d\n", size);
+  //DBG_PRINTF("read %d\n", size);
   while (bytesRead < size)
   {
     waitMessage();
@@ -345,13 +345,13 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
 {
   uint32_t sentSize = 0;
-  DBG_PRINTF("read %d\n", size);
+  //DBG_PRINTF("write %d\n", size);
   while (sentSize < size)
   {
-    const uint32_t sendSize = min(size - sentSize, 256);
-    //m_uartDrv->waitForWrite(sendSize);
+    const uint32_t sendSize = min(size - sentSize, static_cast<uint32_t>(255));
+    m_uartDrv->waitForWrite(sendSize);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
-    delay(4);
+    //delay(4);
   }
   return kErpcStatus_Success; // return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
