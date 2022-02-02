@@ -27,6 +27,9 @@ EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, Ser
 
 EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX, uint8_t _pinRTS, uint8_t _pinCTS) :
   is_waiting_for_read{ false }, sem_read{ 0 }, request_size{ 0 }, sem_write{ 0 }
+#ifdef UNIT_TEST
+  , readBusywaitCount { 0 }, writeBusywaitCount { 0 }
+#endif
 {
   sercom = _s;
   uc_pinRX = _pinRX;
@@ -176,6 +179,12 @@ int EUart::read()
       *pul_outclrRTS = ul_pinMaskRTS;
     }
   }
+#ifdef UNIT_TEST
+  if (c < 0)
+  {
+    readBusywaitCount++;
+  }
+#endif
 
   return c;
 }
@@ -191,6 +200,9 @@ size_t EUart::write(const uint8_t data)
     // spin lock until a spot opens up in the buffer
     while (txBuffer.isFull())
     {
+#ifdef UNIT_TEST
+      writeBusywaitCount++;
+#endif
       uint8_t interruptsEnabled = ((__get_PRIMASK() & 0x1) == 0);
 
       if (interruptsEnabled)
@@ -290,8 +302,7 @@ void EUart::waitForWrite(size_t n)
     return;
   }
   noInterrupts();
-  int avail = txBuffer.availableForStore();
-  int x = txBuffer.available();
+  size_t avail = static_cast<size_t>(txBuffer.availableForStore());
   if (n <= avail)
   {
     interrupts();
@@ -299,7 +310,6 @@ void EUart::waitForWrite(size_t n)
   }
   request_size = n - avail;
   interrupts();
-  //DBG_PRINTF("%d, %d, %d, %d\n", n, avail, request_size, x);
   sem_write.get(Semaphore::kWaitForever);
 }
 
@@ -330,7 +340,6 @@ erpc_status_t UartTransport::init(void)
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
   uint32_t bytesRead = 0;
-  //DBG_PRINTF("read %d\n", size);
   while (bytesRead < size)
   {
     waitMessage();
@@ -345,13 +354,13 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
 {
   uint32_t sentSize = 0;
-  //DBG_PRINTF("write %d\n", size);
   while (sentSize < size)
   {
+    // txBuffer.availableForStore() returns 255 when buffer empty, 
+    // so sendSize shoud be less r\than or equal 255
     const uint32_t sendSize = min(size - sentSize, static_cast<uint32_t>(255));
     m_uartDrv->waitForWrite(sendSize);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
-    //delay(4);
   }
   return kErpcStatus_Success; // return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
@@ -367,9 +376,5 @@ bool UartTransport::hasMessage()
 
 void UartTransport::waitMessage()
 {
-  if (hasMessage())
-  {
-    return;
-  }
   m_uartDrv->waitForRead();
 }

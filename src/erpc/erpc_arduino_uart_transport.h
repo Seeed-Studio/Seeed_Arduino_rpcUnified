@@ -13,6 +13,8 @@
 #include "Arduino.h"
 #include <stdlib.h>
 
+#define UNIT_TEST
+
 /*!
  * @addtogroup uart_transport
  * @{
@@ -73,7 +75,10 @@ class EUart : public HardwareSerialEx
 
     virtual void waitForRead() override;
     virtual void waitForWrite(size_t n) override;
-
+#ifdef UNIT_TEST
+    inline uint32_t getReadBusywaitCount() { return readBusywaitCount; };
+    inline uint32_t getWriteBusywaitCount() { return writeBusywaitCount; };
+#endif
   private:
     SERCOM *sercom;
     RingBufferN<4096> rxBuffer;
@@ -93,6 +98,10 @@ class EUart : public HardwareSerialEx
     Semaphore sem_read;
     volatile size_t request_size;
     Semaphore sem_write;
+#ifdef UNIT_TEST
+    uint32_t readBusywaitCount;
+    uint32_t writeBusywaitCount;
+#endif
 
     SercomNumberStopBit extractNbStopBit(uint16_t config);
     SercomUartCharSize extractCharSize(uint16_t config);
