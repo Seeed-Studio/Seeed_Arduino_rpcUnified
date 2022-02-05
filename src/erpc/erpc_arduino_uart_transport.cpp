@@ -179,12 +179,6 @@ int EUart::read()
       *pul_outclrRTS = ul_pinMaskRTS;
     }
   }
-#ifdef UNIT_TEST
-  if (c < 0)
-  {
-    readBusywaitCount++;
-  }
-#endif
 
   return c;
 }
@@ -200,9 +194,6 @@ size_t EUart::write(const uint8_t data)
     // spin lock until a spot opens up in the buffer
     while (txBuffer.isFull())
     {
-#ifdef UNIT_TEST
-      writeBusywaitCount++;
-#endif
       uint8_t interruptsEnabled = ((__get_PRIMASK() & 0x1) == 0);
 
       if (interruptsEnabled)

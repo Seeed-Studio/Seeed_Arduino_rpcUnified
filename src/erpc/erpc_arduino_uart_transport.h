@@ -13,7 +13,6 @@
 #include "Arduino.h"
 #include <stdlib.h>
 
-//#define UNIT_TEST
 
 /*!
  * @addtogroup uart_transport
@@ -51,10 +50,6 @@ class HardwareSerialEx : public HardwareSerial
 
     virtual void waitForRead() = 0;
     virtual void waitForWrite(size_t) = 0;
-#ifdef UNIT_TEST
-    inline virtual uint32_t getReadBusywaitCount() { return UINT32_MAX; };
-    inline virtual uint32_t getWriteBusywaitCount() { return UINT32_MAX; };
-#endif
 };
 
 class EUart : public HardwareSerialEx
@@ -79,10 +74,7 @@ class EUart : public HardwareSerialEx
 
     virtual void waitForRead() override;
     virtual void waitForWrite(size_t n) override;
-#ifdef UNIT_TEST
-    inline virtual uint32_t getReadBusywaitCount() override { return readBusywaitCount; };
-    inline virtual uint32_t getWriteBusywaitCount() override { return writeBusywaitCount; };
-#endif
+
   private:
     SERCOM *sercom;
     RingBufferN<4096> rxBuffer;
@@ -102,10 +94,6 @@ class EUart : public HardwareSerialEx
     Semaphore sem_read;
     volatile size_t request_size;
     Semaphore sem_write;
-#ifdef UNIT_TEST
-    uint32_t readBusywaitCount;
-    uint32_t writeBusywaitCount;
-#endif
 
     SercomNumberStopBit extractNbStopBit(uint16_t config);
     SercomUartCharSize extractCharSize(uint16_t config);
@@ -144,10 +132,6 @@ public:
     virtual bool hasMessage(void);
 
     virtual void waitMessage(void) override;
-#ifdef UNIT_TEST
-    inline uint32_t getReadBusywaitCount() { return m_uartDrv->getReadBusywaitCount(); };
-    inline uint32_t getWriteBusywaitCount() { return m_uartDrv->getWriteBusywaitCount(); };
-#endif
 
 protected:
     HardwareSerialEx *m_uartDrv; /*!< Access structure of the USART Driver */
