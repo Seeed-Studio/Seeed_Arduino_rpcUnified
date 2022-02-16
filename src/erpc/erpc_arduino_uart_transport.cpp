@@ -9,12 +9,7 @@
 #include "erpc_arduino_uart_transport.h"
 #include "Arduino.h"
 #include "wiring_private.h"
-#define DEBUG
-#ifdef DEBUG
-#define DBG_PRINTF(fmt, ...) Serial.printf("%s %d: "  fmt, "uart.cpp", __LINE__, ##__VA_ARGS__)
-#else
-#define DBG_PRINTF(fmt, ...)
-#endif
+
 using namespace erpc;
 
 #define NO_RTS_PIN 255
