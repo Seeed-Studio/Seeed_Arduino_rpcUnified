@@ -200,14 +200,8 @@ erpc_status_t SimpleServer::poll(void)
 {
     if (m_isServerOn)
     {
-        if (m_transport->hasMessage())
-        {
-            return runInternal();
-        }
-        else
-        {
-            return kErpcStatus_Success;
-        }
+        m_transport->waitMessage();
+        return runInternal();
     }
     return kErpcStatus_ServerIsDown;
 }

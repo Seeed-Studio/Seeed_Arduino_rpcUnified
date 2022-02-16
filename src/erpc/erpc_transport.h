@@ -76,7 +76,7 @@ namespace erpc
      *
      * @retval True when a message is available to process, else false.
      */
-       bool hasMessage(void){ return true; }
+        virtual bool hasMessage(void){ return true; }
 
         /*!
      * @brief This functions sets the CRC-16 implementation.
@@ -84,6 +84,13 @@ namespace erpc
      * @param[in] crcImpl Object containing crc-16 compute function.
      */
         virtual void setCrc16(Crc16 *crcImpl){ (void)crcImpl; };
+
+        /*!
+     * @brief Wait for an incoming message.
+     * 
+     * @retval wait until a message is available
+     */
+        virtual void waitMessage(void) { }
     };
 
     /*!

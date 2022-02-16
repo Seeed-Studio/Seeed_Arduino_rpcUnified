@@ -20,7 +20,11 @@ EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, Ser
 {
 }
 
-EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX, uint8_t _pinRTS, uint8_t _pinCTS)
+EUart::EUart(SERCOM *_s, uint8_t _pinRX, uint8_t _pinTX, SercomRXPad _padRX, SercomUartTXPad _padTX, uint8_t _pinRTS, uint8_t _pinCTS) :
+  is_waiting_for_read{ false }, sem_read{ 0 }, request_size{ 0 }, sem_write{ 0 }
+#ifdef UNIT_TEST
+  , readBusywaitCount { 0 }, writeBusywaitCount { 0 }
+#endif
 {
   sercom = _s;
   uc_pinRX = _pinRX;
@@ -105,6 +109,11 @@ void EUart::IrqHandler()
         *pul_outsetRTS = ul_pinMaskRTS;
       }
     }
+    if (is_waiting_for_read)
+    {
+      is_waiting_for_read = false;
+      sem_read.putFromISR();
+    }
   }
 
   if (sercom->isDataRegisterEmptyUART())
@@ -114,6 +123,14 @@ void EUart::IrqHandler()
       uint8_t data = txBuffer.read_char();
 
       sercom->writeDataUART(data);
+      if (request_size > 0)
+      {
+        --request_size;
+        if (request_size == 0)
+        {
+          sem_write.putFromISR();
+        }
+      }
     }
     else
     {
@@ -251,6 +268,37 @@ SercomParityMode EUart::extractParity(uint16_t config)
   }
 }
 
+void EUart::waitForRead()
+{
+  noInterrupts();
+  if (available() > 0)
+  {
+    interrupts();
+    return;
+  }
+  is_waiting_for_read = true;
+  interrupts();
+  sem_read.get(Semaphore::kWaitForever);
+}
+
+void EUart::waitForWrite(size_t n)
+{
+  if (n == 0)
+  {
+    return;
+  }
+  noInterrupts();
+  size_t avail = static_cast<size_t>(txBuffer.availableForStore());
+  if (n <= avail)
+  {
+    interrupts();
+    return;
+  }
+  request_size = n - avail;
+  interrupts();
+  sem_write.get(Semaphore::kWaitForever);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +307,7 @@ SercomParityMode EUart::extractParity(uint16_t config)
 // Code
 ////////////////////////////////////////////////////////////////////////////////
 
-UartTransport::UartTransport(HardwareSerial *uartDrv, unsigned long baudrate)
+UartTransport::UartTransport(HardwareSerialEx *uartDrv, unsigned long baudrate)
     : m_uartDrv(uartDrv), m_baudrate(baudrate)
 {
 }
@@ -280,7 +328,7 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
   uint32_t bytesRead = 0;
   while (bytesRead < size)
   {
-    while (!m_uartDrv->available()) delay(1);
+    waitMessage();
 
     const int c = m_uartDrv->read();
     if (c < 0) continue;
@@ -294,9 +342,11 @@ erpc_status_t UartTransport::underlyingSend(const uint8_t *data, uint32_t size)
   uint32_t sentSize = 0;
   while (sentSize < size)
   {
-    const uint32_t sendSize = min(size - sentSize, 256);
+    // txBuffer.availableForStore() returns 255 when buffer empty, 
+    // so sendSize shoud be less r\than or equal 255
+    const uint32_t sendSize = min(size - sentSize, static_cast<uint32_t>(255));
+    m_uartDrv->waitForWrite(sendSize);
     sentSize += m_uartDrv->write(&data[sentSize], sendSize);
-    delay(4);
   }
   return kErpcStatus_Success; // return size != offset ? kErpcStatus_SendFailed : kErpcStatus_Success;
 }
@@ -308,4 +358,9 @@ bool UartTransport::hasMessage()
     return true;
   }
   return false;
+}
+
+void UartTransport::waitMessage()
+{
+  m_uartDrv->waitForRead();
 }
